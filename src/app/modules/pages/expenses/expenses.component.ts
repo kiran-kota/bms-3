@@ -88,6 +88,7 @@ export class ExpensesComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
+    localStorage.setItem('url-link', 'Expenses');
     $('#toggle-event').bootstrapToggle();
     this.user = JSON.parse(localStorage.getItem('user'));
     localStorage.setItem('category_role', 'Expense');

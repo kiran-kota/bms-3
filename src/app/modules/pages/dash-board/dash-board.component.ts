@@ -17,7 +17,7 @@ export class DashBoardComponent implements OnInit {
 
   start = moment().subtract(29, "days");
   end = moment();
-  
+
   data:any;
   summary: any;
   loading: boolean = true;
@@ -45,9 +45,9 @@ export class DashBoardComponent implements OnInit {
       ]
     }
   };
-  
+
   //dashboard chart option
-  chartOption: any = {   
+  chartOption: any = {
     chart: {
       type: "column"
     },
@@ -61,7 +61,7 @@ export class DashBoardComponent implements OnInit {
       categories:[],
       crosshair: true
     },
-    yAxis: {  
+    yAxis: {
       title:{
           text:"Amount (Rs.)"
         },
@@ -81,7 +81,7 @@ export class DashBoardComponent implements OnInit {
           label: {
               text: ''
           }
-      }] 
+      }]
     },
     plotOptions: {
       column: {
@@ -109,7 +109,7 @@ export class DashBoardComponent implements OnInit {
     title: {
         text: 'Customer Wise Sales'
     },
-  
+
     plotOptions: {
         pie: {
             allowPointSelect: true,
@@ -136,7 +136,7 @@ export class DashBoardComponent implements OnInit {
     title: {
         text: 'Supplier Wise Purchase'
     },
-  
+
     plotOptions: {
         pie: {
             allowPointSelect: true,
@@ -196,26 +196,27 @@ export class DashBoardComponent implements OnInit {
         color: '#17CDD6'
     }]
   }
-  
 
 
 
- 
- 
+
+
+
 
   constructor(private apiService: ApiService) {
- 
+
   }
 
   ngOnInit() {
+    localStorage.setItem('url-link', 'Dashboard');
     this.daterange.start = moment().subtract(29, "days");
     this.daterange.end = moment();
-  
+
   $('#company_link').on('click', function (e) {
     $("#content").css('display', 'none');
     $("#balance-part").css('display', 'block');
   });
-  
+
   this.apiService.get('summary').subscribe((res:any)=>{
     this.summary = res;
     console.log(this.summary);
@@ -223,16 +224,16 @@ export class DashBoardComponent implements OnInit {
   });
   this.loadDashboard();
   this.loadBalance();
-  
+
   }
   goForDashboard(){
-    $("#hideCont").css('display', 'none');  
+    $("#hideCont").css('display', 'none');
     $("#content").css('display', 'block');
     // let user = JSON.parse(localStorage.getItem('user'));
     // if(user.Pin == this.pin){
-    //   $("#hideCont").css('display', 'none');  
+    //   $("#hideCont").css('display', 'none');
     //   $("#content").css('display', 'block');
-    // }    
+    // }
   }
   public selectedDate(value: any, datepicker?: any) {
     datepicker.start = value.start;
@@ -241,7 +242,7 @@ export class DashBoardComponent implements OnInit {
     this.daterange.end = value.end;
     this.daterange.label = value.label;
     this.start = value.start;
-    this.end = value.end;  
+    this.end = value.end;
   }
 
   loadDashboard(){
@@ -249,18 +250,18 @@ export class DashBoardComponent implements OnInit {
       console.log(res);
       this.data = res;
       const accounts = JSON.parse(localStorage.getItem('accounts'));
-     
-  
+
+
       this.chartOption.title.text = 'Day Wise Sales & Profit Chart';
       this.chartOption.subtitle.text = `Total Sale: ${res.chartSummary.Total} , Total Profit: ${res.chartSummary.Amount} | Avg Sale: ${res.chartSummary.AvgTotal} , Avg Profit: ${res.chartSummary.AvgAmount}`;
-      
+
       this.chartOption.yAxis.plotLines[0].value = res.chartSummary.AvgTotal;
       this.chartOption.yAxis.plotLines[1].value = res.chartSummary.AvgAmount;
       this.chartOption.xAxis.categories = res.chartSummary.ChartValues.map(x=>x.Key);
       this.chartOption.series[0].data = res.chartSummary.ChartValues.map(x=>x.Total);
       this.chartOption.series[1].data = res.chartSummary.ChartValues.map(x=>x.Amount);
       Highcharts.chart('chart_dashboard', this.chartOption);
-      
+
       let chartValues1 = [];
       res.customerPieChart.forEach((x:any)=>{
         let t = {
@@ -269,7 +270,7 @@ export class DashBoardComponent implements OnInit {
         }
         chartValues1.push(t);
       });
-  
+
       let chartValues2 = [];
       res.supplierPieChart.forEach((x:any)=>{
         let t = {
@@ -278,14 +279,14 @@ export class DashBoardComponent implements OnInit {
         }
         chartValues2.push(t);
       });
-  
-      
+
+
       this.piechartOption1.series[0].data = chartValues1;
       Highcharts.chart('chart_customer', this.piechartOption1);
-  
+
       this.piechartOption2.series[0].data = chartValues2;
       Highcharts.chart('chart_supplier', this.piechartOption2);
-  
+
     });
   }
   loadBalance(){

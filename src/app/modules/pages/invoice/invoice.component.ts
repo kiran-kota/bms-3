@@ -32,7 +32,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
   user:any = JSON.parse(localStorage.getItem('user'));
 
   constructor(private apiService: ApiService, private router: Router,  private route: ActivatedRoute, private toastr: ToastrService, private excelService: ExcelService, private firestore: AngularFirestore) {
-   
+
    }
   ngOnDestroy(): void {
     $('#' + this.bill.Type + '_tab').removeClass('active');
@@ -85,7 +85,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
         },
         minLength: 1
      });
-    }); 
+    });
 
     if(id != 0)
     {
@@ -93,7 +93,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
         this.bill = res;
         this.checkPayment = this.bill.OtherPayment != 0 ? true : false;
         this.billItems = JSON.parse(res.BillItemsList);
-      });      
+      });
     }else{
 
       this.route.queryParams.subscribe(params => {
@@ -108,7 +108,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
             this.bill.LastBillId = this.account.LastBillId;
             this.bill.LastBillNo = this.account.LastBillNo;
             this.bill.PastDue = this.account.TotalDue;
-          
+
             this.checkPayment = this.bill.OtherPayment != 0 ? true : false;
             this.billItems = JSON.parse(res.BillItemsList);
             this.summarize();
@@ -119,11 +119,11 @@ export class InvoiceComponent implements OnInit, OnDestroy {
           this.bill.InvoiceNo = 0;
           this.bill.Token = 0;
           this.bill.Date = moment();
-      
-          this.bill.AccountId = cid; 
+
+          this.bill.AccountId = cid;
           this.bill.LastBillId = this.account.LastBillId;
           this.bill.LastBillNo = this.account.LastBillNo;
-      
+
           this.bill.Qty = 0;
           this.bill.Total = 0;
           this.bill.PastDue = this.account.TotalDue;
@@ -131,12 +131,12 @@ export class InvoiceComponent implements OnInit, OnDestroy {
           this.bill.Payment = 0;
           this.bill.OtherPayment = 0;
           this.bill.TotalDue = this.account.TotalDue;
-      
+
           this.bill.Status = true;
           this.bill.UserId = this.user.UserId;
           this.bill.Edit = true;
-          this.bill.Type = this.account.Role == 'Customer' ? 'Sale': 'Purchase'; 
-        }  
+          this.bill.Type = this.account.Role == 'Customer' ? 'Sale': 'Purchase';
+        }
       });
 
       $('#' + this.bill.Type + '_tab').addClass('active');
@@ -156,20 +156,20 @@ export class InvoiceComponent implements OnInit, OnDestroy {
   check($event){
     var name = $event.target.value;
     let found = this.items.find(x=>x.Code.toString().toLowerCase() == name.toString().toLocaleLowerCase());
-    if(found != null){ 
-      let tiers = JSON.parse(found.ItemTiersList);
-      let rates = JSON.parse(found.ItemAccountsList);
-      
+    if(found != null){
+      let tiers = JSON.parse(found.TiersList);
+      let rates = JSON.parse(found.AccountsList);
+
       console.log(found);
       this.billItem = new BillItem();
       this.billItem.ItemId = found.ItemId;
       this.billItem.Price = this.account.TierId == null ? rates.find(x=>x.AccountId == this.account.AccountId).Rate : tiers.find(x=>x.TierId == this.account.TierId).Price;
-      this.billItem.Rate = this.bill.Type == 'Sale' ?  (rates.length > 0 ? _.maxBy(rates, 'Rate')['Rate'] : 0) : this.billItem.Price; 
+      this.billItem.Rate = this.bill.Type == 'Sale' ?  (rates.length > 0 ? _.maxBy(rates, 'Rate')['Rate'] : 0) : this.billItem.Price;
       $('#avail').val(found.Purchased + found.Stock - found.Sold);
       $('#price').val(found.Price);
       $('#qty').prop('disabled', false);
       $('#qty').focus();
-      $('#code').val(found.Code);    
+      $('#code').val(found.Code);
       console.log(this.billItem);
     }else{
       $('#code').val('');
@@ -188,7 +188,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
       this.billItem.Amount = amount;
       this.billItem.Profit = profit;
     }else{
-      this.billItem.Amount = null;      
+      this.billItem.Amount = null;
     }
   }
 
@@ -200,7 +200,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
 
     if((this.billItem.Qty > parseFloat($('#avail').val())) && this.bill.Type == 'Sale' && !window.confirm('No more qty. Do want to continue?')){
       return false;
-    } 
+    }
 
     if( $('#toggle-event').prop('checked') == false){
       this.billItem.Qty = -1 * this.billItem.Qty;
@@ -209,7 +209,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     }
 
     if($('#add').text() == 'Add'){
-      let i = this.billItems.findIndex(x=>x.ItemId == this.billItem.ItemId);   
+      let i = this.billItems.findIndex(x=>x.ItemId == this.billItem.ItemId);
       if(i > -1){
         this.billItems[i].Qty += this.billItem.Qty;
         this.billItems[i].Amount += this.billItem.Amount;
@@ -217,12 +217,12 @@ export class InvoiceComponent implements OnInit, OnDestroy {
       }else{
         this.billItems = this.billItems.filter(x=>x.ItemId != this.billItem.ItemId);
         this.billItems.push(this.billItem);
-      }      
+      }
     }else{
       this.billItems = this.billItems.filter(x=>x.ItemId != this.billItem.ItemId);
       this.billItems.push(this.billItem);
     }
-    
+
     this.billItem = new BillItem();
     $('#qty').prop('disabled', true);
     $('#code').prop('disabled', false);
@@ -234,7 +234,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
   }
   editItem(t:any){
     let i = this.billItems.findIndex(x=>x.ItemId == t);
-    this.billItem = this.billItems[i];  
+    this.billItem = this.billItems[i];
     if( $('#toggle-event').prop('checked') == false){
       this.billItem.Qty = -1 * this.billItem.Qty;
       this.billItem.Amount = -1 * this.billItem.Amount;
@@ -243,7 +243,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     $('#qty').prop('disabled', false);
     $('#code').prop('disabled', true);
     $('#add').text('Update');
-    $('#code').val(this.getCode(t));  
+    $('#code').val(this.getCode(t));
   }
   deleteItem(t:any){
     this.billItems = this.billItems.filter(x=>x.ItemId != t);
@@ -274,7 +274,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
 
     this.bill.TotalDue = this.bill.GrandTotal - payment;
   }
- 
+
   save(p:boolean){
 
     if((this.bill.TotalDue > this.account.DueLimit) && !window.confirm('Duelimit exceeded. Do you want to continue?')){
@@ -291,7 +291,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
 
         console.log(res);
         this.loading = false;
-        this.toastr.success(this.bill.Type + ' Updated Successfully', 'Done!');  
+        this.toastr.success(this.bill.Type + ' Updated Successfully', 'Done!');
         if(p == true){
           window.open('/print/' + this.bill.BillId);
         }
@@ -309,7 +309,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.firestore.collection('accounts').doc(this.account.AccountId.toString()).delete();
 
-        this.toastr.success(this.bill.Type + ' Created Successfully', 'Done!');  
+        this.toastr.success(this.bill.Type + ' Created Successfully', 'Done!');
         if(this.uid != undefined){
 
           this.firestore.collection('quotations').doc(this.uid).delete();
@@ -323,7 +323,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
         this.toastr.error('Something went wrong. Try again.', 'Error!');
         this.loading = false;
       });
-    }    
+    }
   }
 
   download(){
@@ -340,24 +340,24 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.excelService.convertExcelToJson(file).then((res:any)=>{
       console.log(res);
-      res.forEach((ele:any) => { 
-        console.log(ele);      
+      res.forEach((ele:any) => {
+        console.log(ele);
         const found = this.items.find(r=>r.Code == ele.Code);
         if(found != undefined){
           const qty = ele.Qty;
           if(qty != 0){
             let tiers = JSON.parse(found.TiersList);
-            let rates = JSON.parse(found.AccountsList);          
+            let rates = JSON.parse(found.AccountsList);
             let billItem = new BillItem();
             billItem.ItemId = found.ItemId;
             billItem.Qty = ele.Qty;
             billItem.Price = this.account.TierId == null ? rates.find(x=>x.AccountId == this.account.AccountId).Rate : tiers.find(x=>x.TierId == this.account.TierId).Price;
-            billItem.Rate = this.bill.Type == 'Sale' ? (rates.length > 0 ? _.maxBy(rates, 'Rate')['Rate'] : 0) : billItem.Price;  
+            billItem.Rate = this.bill.Type == 'Sale' ? (rates.length > 0 ? _.maxBy(rates, 'Rate')['Rate'] : 0) : billItem.Price;
             var amount = qty * billItem.Price;
-            var profit = qty * (billItem.Price - billItem.Rate);         
+            var profit = qty * (billItem.Price - billItem.Rate);
             billItem.Amount = amount;
             billItem.Profit = profit;
-            let i = this.billItems.findIndex(x=>x.ItemId == billItem.ItemId);   
+            let i = this.billItems.findIndex(x=>x.ItemId == billItem.ItemId);
             if(i > -1){
               this.billItems[i].Qty += billItem.Qty;
               this.billItems[i].Amount += billItem.Amount;
@@ -366,15 +366,15 @@ export class InvoiceComponent implements OnInit, OnDestroy {
               this.billItems = this.billItems.filter(x=>x.ItemId != billItem.ItemId);
               this.billItems.push(billItem);
             }
-            this.summarize();  
+            this.summarize();
 
-          }         
+          }
         }
       });
       console.log(accounts);
       this.loading = false;
     })
-    
+
   }
 
 }

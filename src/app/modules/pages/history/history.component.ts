@@ -24,7 +24,7 @@ export class HistoryComponent implements OnInit {
   users:any = [];
   start = moment().subtract(29, "days");
   end = moment();
-  
+
   public daterange: any = {};
   public options: any = {
     locale: { format: "DD/MM/YYYY" },
@@ -61,18 +61,19 @@ export class HistoryComponent implements OnInit {
       this.fetch();
     });
   }
-  
+
   fetch() {
     this.filtered =  this.data;
     //this.dtTrigger.next();
     this.rerender();
   }
   ngOnInit() {
+    localStorage.setItem('url-link', 'History');
     this.users = JSON.parse(localStorage.getItem('users'));
     this.daterange.start = moment().subtract(29, "days");
     this.daterange.end = moment();
     this.load();
-  
+
     this.dtOptions = {
       pagingType: "full_numbers",
       pageLength: 10,
@@ -87,7 +88,7 @@ export class HistoryComponent implements OnInit {
     this.daterange.end = value.end;
     this.daterange.label = value.label;
     this.start = value.start;
-    this.end = value.end;  
+    this.end = value.end;
     this.load();
   }
   ngOnDestroy(): void {
@@ -104,7 +105,7 @@ export class HistoryComponent implements OnInit {
     });
   }
   download(){
-    
+
     const header = ['Date', 'Details', 'User'];
     const data = this.filtered.map(x=>[moment(x.Date).format('DD/MM/YYYY hh:mm:ss A'), x.Description, this.users.find(r=>r.UserId == x.UserId).UserName]);
     this.excelService.generateExcel(header, data, 'history');

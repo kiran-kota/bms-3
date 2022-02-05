@@ -104,6 +104,7 @@ export class ItemsComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
+    localStorage.setItem('url-link', 'Items');
     this.daterange.start = moment().subtract(29, "days");
     this.daterange.end = moment();
 

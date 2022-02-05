@@ -80,6 +80,7 @@ export class TransfersComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
+    localStorage.setItem('url-link', 'Transfers');
     this.user = JSON.parse(localStorage.getItem('user'));
     this.users = JSON.parse(localStorage.getItem('users')).filter(x=>x.Deleted == false && x.UserName != 'Admin');
     this.daterange.start = moment().subtract(29, "days");

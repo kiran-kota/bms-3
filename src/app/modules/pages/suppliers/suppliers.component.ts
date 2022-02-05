@@ -95,7 +95,7 @@ export class SuppliersComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
-
+    localStorage.setItem('url-link', 'Suppliers');
     this.daterange.start = moment().subtract(29, "days");
     this.daterange.end = moment();
 

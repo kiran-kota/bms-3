@@ -47,7 +47,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
     'purchase': {
       start: moment().subtract(29, "days"),
       end: moment()
-    }    
+    }
   };
   public options: any = {
     locale: { format: "DD/MM/YYYY" },
@@ -73,7 +73,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
     }
   };
 
-  chartOption: any = {   
+  chartOption: any = {
       chart: {
         type: "column"
       },
@@ -87,7 +87,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
         categories:[],
         crosshair: true
       },
-      yAxis: {  
+      yAxis: {
         title:{
             text:"Amount (Rs.)"
           },
@@ -107,7 +107,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
             label: {
                 text: ''
             }
-        }] 
+        }]
       },
       plotOptions: {
         column: {
@@ -123,7 +123,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
         data: []
     }]
     };
-   //barchart  
+   //barchart
     chartOptions: any = {
       'profit': this.chartOption,
       'sale': this.chartOption,
@@ -133,7 +133,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
 
 
   constructor(private apiService: ApiService, private toastr: ToastrService, private excelService: ExcelService) { }
- 
+
   load(url){
     this.loading = true;
     $("#myDatatable").DataTable().clear().draw();
@@ -145,18 +145,18 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
       this.rerender();
     });
   }
-  
- 
+
+
   ngOnInit() {
 
-
+    localStorage.setItem('url-link', 'Analysis');
     const start = moment().subtract(29, 'days').format('YYYY-MM-DD');
     const end = moment().format('YYYY-MM-DD');
 
-    this.categories = JSON.parse(localStorage.getItem('categories')).filter(x=>x.Role == 'Item');    
-    this.items = JSON.parse(localStorage.getItem('items')).filter(x=>x.Status == true);    
-    this.suppliers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Supplier');    
-    this.customers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Customer');  
+    this.categories = JSON.parse(localStorage.getItem('categories')).filter(x=>x.Role == 'Item');
+    this.items = JSON.parse(localStorage.getItem('items')).filter(x=>x.Status == true);
+    this.suppliers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Supplier');
+    this.customers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Customer');
 
     this.apiService.get('analysis-filters').subscribe((res:any)=>{
       localStorage.setItem('analysis-filters', JSON.stringify(res));
@@ -167,7 +167,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
     this.daterange.start = moment().subtract(29, "days");
     this.daterange.end = moment();
     this.load(`smartdata/20/30/50/7/[]`);
-  
+
     this.dtOptions = {
       pagingType: "full_numbers",
       pageLength: 10,
@@ -175,7 +175,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
       order: [1, 'asc']
     };
 
- 
+
 
     this.loadChart('profit', this.start, this.end, [], []);
     this.loadChart('sale', this.start, this.end, [], []);
@@ -190,7 +190,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
 
       cat.forEach((ele:any) => {
         this.analysisFilters = JSON.parse(localStorage.getItem('analysis-filters'));
-        var suppliers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Supplier');   
+        var suppliers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Supplier');
         var items = this.analysisFilters.filter(x=>x.CategoryId == Number(ele));
         items.forEach((v:any)=>{
           sel.push({ label: v.Code, title: v.Code, value: v.ItemId, selected: true });
@@ -203,22 +203,22 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
                 }
               }
           })
-        });        
+        });
       });
 
       $('#' + tg +' .suppliers').multiselect('dataprovider', sups);
       $('#' + tg +' .suppliers').multiselect('refresh');
       $('#' + tg +' .items').multiselect('dataprovider', sel);
-      $('#' + tg +' .items').multiselect('refresh');  
+      $('#' + tg +' .items').multiselect('refresh');
     });
 
     $('.suppliers').change(function (e) {
       var sups = $(this).val();
       var tg = $(this).attr('data-value');
-      var suppliers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Supplier'); 
+      var suppliers = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Role == 'Supplier');
       var items = JSON.parse(localStorage.getItem('items')).filter(x=>x.Status == true);
       var sel = [];
-      sups.forEach((ele:any) => { 
+      sups.forEach((ele:any) => {
         const v = suppliers.find(x=>x.AccountId == Number(ele));
         $.map(v.Items, function (x) {
           var k = sel.filter(y => y.value == x).length;
@@ -234,9 +234,9 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
       $('#' + tg +' .items').multiselect('dataprovider', sel);
       $('#' + tg +' .items').multiselect('refresh');
     });
-    
-   
-  
+
+
+
 
   }
   public selectedDate(value: any, i: string) {
@@ -245,7 +245,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
     this.daterange[i].start = value.start;
     this.daterange[i].end = value.end;
     this.start = value.start;
-    this.end = value.end;  
+    this.end = value.end;
     console.log('i', i);
   }
   ngOnDestroy(): void {
@@ -297,7 +297,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
     });
 
 
- 
+
 
   }
   rerender(): void {
@@ -306,7 +306,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
       this.dtTrigger.next();
     });
   }
-  
+
 
   getSmartData(){
     var p1 = parseFloat($('#lastOne').val());
@@ -326,7 +326,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
         $.map($('#spt .items').val(), function (x) {
             items.push(parseInt(x));
         });
-        var url = `smartdata/${p1}/${p2}/${p3}/${p}/${JSON.stringify(items)}`; 
+        var url = `smartdata/${p1}/${p2}/${p3}/${p}/${JSON.stringify(items)}`;
         console.log(url);
         // this.apiService.get(url).subscribe((res:any)=>console.log(res));
         this.load(url);
@@ -397,11 +397,11 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   download(type: string){
-    
+
     var headers = ['Code'];
     var days = this.chartdata[type].ChartValues.map(x=>x.Key);
     headers = headers.concat(days);
-    
+
     var data = [];
     var qtys = [];
     var amounts = [];
@@ -421,10 +421,10 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
       });
       qtys.push(qtyList);
       amounts.push(amtList);
-      
+
     });
     console.log(qtys, amounts);
-    
+
 
     this.excelService.generateAnalysisExcel(headers, qtys, amounts, type);
   }
@@ -445,7 +445,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
     this.chartOptions[type].chart.type = r;
     this.chartOptions[type].title.text = p + ' Chart';
     this.chartOptions[type].subtitle.text = `Total ${p == 'Profit' ? 'Sale' : p}: ${this.chartdata[type].Total} , Total ${p == 'Profit' ? 'Profit' : 'Qty'}: ${this.chartdata[type].Amount} | Avg ${p == 'Profit' ? 'Sale' : p}: ${this.chartdata[type].AvgTotal} , Avg ${p == 'Profit' ? 'Profit' : 'Qty'}: ${this.chartdata[type].AvgAmount}`;
-    
+
     this.chartOptions[type].yAxis.plotLines[0].value = this.chartdata[type].AvgTotal;
     this.chartOptions[type].yAxis.plotLines[1].value = this.chartdata[type].AvgAmount;
     this.chartOptions[type].xAxis.categories = days;
@@ -454,7 +454,7 @@ export class AnalysisComponent implements OnDestroy, AfterViewInit, OnInit {
     this.chartOptions[type].series[0].data = total;
     this.chartOptions[type].series[1].data = amount;
     Highcharts.chart('chart_' + type, this.chartOptions[type]);
-      
+
   }
 
 

@@ -101,7 +101,7 @@ export class SalesComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
-
+    localStorage.setItem('url-link', 'Sales');
     this.userId = JSON.parse(localStorage.getItem('user')).UserId;
     this.role = JSON.parse(localStorage.getItem('user')).Role;
     this.accounts = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Deleted == false && x.Role == 'Customer');

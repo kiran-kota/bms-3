@@ -61,9 +61,9 @@ export class QuotationsComponent implements OnDestroy, AfterViewInit, OnInit {
       ]
     }
   };
-  
-  constructor(private apiService: ApiService, private toastr: ToastrService, private excelService: ExcelService, private router: Router, private firestore: AngularFirestore) { 
- 
+
+  constructor(private apiService: ApiService, private toastr: ToastrService, private excelService: ExcelService, private router: Router, private firestore: AngularFirestore) {
+
   }
 
   load(){
@@ -72,20 +72,20 @@ export class QuotationsComponent implements OnDestroy, AfterViewInit, OnInit {
     $(".dataTables_empty").text("Loading...");
 
     this.firestore.collection('quotations').snapshotChanges().subscribe((res:any)=>{
-    
+
       this.data = res.map(e => {
         console.log(e.payload);
-        return { id: e.payload.doc.id, data: e.payload.doc.data()};        
-      });     
+        return { id: e.payload.doc.id, data: e.payload.doc.data()};
+      });
       this.loading = false;
       console.log('quotations', this.data);
       this.fetch();
     });
-   
-   
-    
+
+
+
   }
-  
+
   fetch() {
     const s = this.status == "true" ? true : false;
     const d = Number(this.tierId);
@@ -94,11 +94,12 @@ export class QuotationsComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
+    localStorage.setItem('url-link', 'Quotation');
     this.userId == JSON.parse(localStorage.getItem('user')).UserId;
     this.users = JSON.parse(localStorage.getItem('users'));
     this.daterange.start = moment().subtract(29, "days");
     this.daterange.end = moment();
-    this.load();  
+    this.load();
     this.dtOptions = {
       pagingType: "full_numbers",
       pageLength: 10,
@@ -113,7 +114,7 @@ export class QuotationsComponent implements OnDestroy, AfterViewInit, OnInit {
     this.daterange.end = value.end;
     this.daterange.label = value.label;
     this.start = value.start;
-    this.end = value.end;  
+    this.end = value.end;
     this.load();
   }
   ngOnDestroy(): void {
@@ -156,7 +157,7 @@ export class QuotationsComponent implements OnDestroy, AfterViewInit, OnInit {
       localStorage.setItem('accounts', JSON.stringify(res));
       this.selected = res.filter(x=>x.TierId == u.data.AccountId);
       $('#customersTable').modal('toggle');
-    
+
 
     });
   }
@@ -176,7 +177,7 @@ export class QuotationsComponent implements OnDestroy, AfterViewInit, OnInit {
     console.log(id);
     this.router.navigate(['/invoice/' + id + '/0'], { queryParams: { uid: this.uid} });
   }
-  
+
 }
 
 

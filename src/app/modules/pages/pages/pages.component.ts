@@ -8,7 +8,8 @@ declare var $;
   styleUrls: ['./pages.component.scss']
 })
 export class PagesComponent implements OnInit {
-
+  user:any = JSON.parse(localStorage.getItem('user'));
+  tabs:any = JSON.parse(JSON.parse(localStorage.getItem('user')).Tabs);
   constructor() {
   }
 
@@ -16,5 +17,8 @@ export class PagesComponent implements OnInit {
     window.dispatchEvent(new Event('resize'));
     $('body').addClass('hold-transition skin-blue sidebar-mini');
   }
-
+  check(){
+    let u = localStorage.getItem('url-link');
+    return this.user.Role == 'Owner' || this.user.Role == 'Admin' || this.tabs.indexOf(u) > -1;
+  }
 }

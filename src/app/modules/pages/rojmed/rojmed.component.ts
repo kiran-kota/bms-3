@@ -60,6 +60,7 @@ export class RojmedComponent implements OnInit {
   constructor(private apiService: ApiService) { }
 
   ngOnInit() {
+    localStorage.setItem('url-link', 'Rojmeds');
     this.apiService.get('users').subscribe((res:any)=>{
       localStorage.setItem('users', JSON.stringify(res));
     });

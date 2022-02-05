@@ -95,6 +95,7 @@ export class PurchasesComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
+    localStorage.setItem('url-link', 'Purchases');
     this.userId = JSON.parse(localStorage.getItem('user')).UserId;
     this.role = JSON.parse(localStorage.getItem('user')).Role;
     this.accounts = JSON.parse(localStorage.getItem('accounts')).filter(x=>x.Deleted == false && x.Role == 'Supplier');
@@ -133,7 +134,7 @@ export class PurchasesComponent implements OnDestroy, AfterViewInit, OnInit {
     });
   }
   getAccountName(id:number){
-    return JSON.parse(localStorage.getItem('users')).find(x=>x.AccountId == id).Name;
+    return JSON.parse(localStorage.getItem('accounts')).find(x=>x.AccountId == id).Name;
   }
   getUserName(id:number){
 

@@ -13,7 +13,7 @@ declare var $;
 })
 export class LoginComponent implements OnInit, OnDestroy {
   forgot: boolean = false;
-  
+
   user: User = new User();
   users:any = [];
   constructor(private router: Router, private apiService: ApiService, private toastr: ToastrService) {
@@ -21,16 +21,17 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    $('body').addClass('login-page');    
+    $('body').addClass('login-page');
 
     if(localStorage.getItem('user') != undefined){
       localStorage.removeItem('user');
       this.router.navigate(['/']);
     }
+    localStorage.setItem('url-link', 'Sales');
     // this.apiService.get('detials').subscribe((res:any)=>{
     //   this.users = res.Users;
     //   localStorage.setItem('users', JSON.stringify(res.Users));
-  
+
     //   localStorage.setItem('accounts', JSON.stringify(res.Accounts));
     //   localStorage.setItem('categories', JSON.stringify(res.Categories));
     //   localStorage.setItem('items', JSON.stringify(res.Items));
@@ -46,12 +47,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
     this.apiService.get('accounts').subscribe((res:any)=>{
       localStorage.setItem('accounts', JSON.stringify(res));
-    });    
+    });
     this.apiService.get('tiers').subscribe((res:any)=>{
       localStorage.setItem('tiers', JSON.stringify(res));
     });
-    
-    
+
+
   }
 
   ngOnDestroy(): void {
@@ -83,8 +84,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.toastr.error('Invaid username or password', 'Invalid credentials');
       }
     }
-    
-    
+
+
   }
   forgotPassword(t: boolean){
     this.forgot = t;
@@ -92,12 +93,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
   getPassword(){
     var found = this.users.find(x=>x.UserName == this.user.UserName && x.Email == this.user.Email);
-    if(found !== undefined){      
-      this.toastr.success('Password sent to registered mobile number', 'Done!');    
-      this.apiService.get(`sms/${this.user.UserName}/${this.user.Email}`).subscribe((res)=>console.log(res)); 
+    if(found !== undefined){
+      this.toastr.success('Password sent to registered mobile number', 'Done!');
+      this.apiService.get(`sms/${this.user.UserName}/${this.user.Email}`).subscribe((res)=>console.log(res));
     }else{
       this.toastr.error('Invaid username and email', 'Invalid user');
     }
   }
-  
+
 }

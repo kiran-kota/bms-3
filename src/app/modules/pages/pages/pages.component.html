@@ -1,10 +1,10 @@
 <app-header></app-header>
-<div class="container-fluid body-content" id="myDiv">  
+<div class="container-fluid body-content" id="myDiv">
   <div class="row" style="margin-top:15px !important;">
       <div class="col-sm-2" style="width: 11% !important;margin-right: 0px !important;">
         <app-side-nav></app-side-nav>
       </div>
-      <div class="col-sm-10" style="padding-left:0px;padding-right: 0px !important; width: 89% !important;">
+      <div class="col-sm-10" style="padding-left:0px;padding-right: 0px !important; width: 89% !important;" *ngIf="check()">
         <router-outlet></router-outlet>
       </div>
   </div>

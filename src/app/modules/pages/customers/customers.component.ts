@@ -116,6 +116,7 @@ export class CustomersComponent implements OnDestroy, AfterViewInit, OnInit {
     this.rerender();
   }
   ngOnInit() {
+    localStorage.setItem('url-link', 'Customers');
     this.role = JSON.parse(localStorage.getItem('user')).Role;
     this.tiers = JSON.parse(localStorage.getItem('tiers'));
     this.daterange.start = moment().subtract(29, "days");
