@@ -1,0 +1,44 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+      <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#" style="font-weight: bold;color:white;">BMS 3.0</a>
+      </div>
+      <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav pull-right">
+
+            <!-- <li class="dropdown">
+              <a href="#" (click)="load()" class="dropdown-toggle notification" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="fa fa-bell"></span><span class="badge badge-dagner">{{notification?.expenses}}</span></a>
+              <ul class="dropdown-menu" *ngIf="!loading" style="width: 250px;">
+
+              </ul>
+            </li>    -->
+
+
+            <li class="dropdown">
+
+              <a (click)="load()" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="padding-right:70px;color:white;font-weight:bold;">{{user?.UserName}}</a>
+              <!-- <ul class="dropdown-menu" *ngIf="loading">
+                <li>Loading...</li>
+              </ul>
+              <ul class="dropdown-menu" *ngIf="!loading">
+                <li style="color:green !important;"><div style="padding: 5px;font-weight: bold;flex: 1;">Sale <span style="float: right;padding-right: 10px;"><i class="fa fa-inr" style="padding-right:3px;"></i>  {{user?.Sale | number}}</span></div></li>
+                <li style="color:green !important;"><div style="padding: 5px;font-weight: bold;flex: 1;">Received <span style="float: right;padding-right: 10px;"><i class="fa fa-inr" style="padding-right:3px;"></i>  {{user?.Received | number}}</span></div></li>
+                <li style="color:red !important;"><div style="padding: 5px;font-weight: bold;flex: 1;">Purchase <span style="float: right;padding-right: 10px;"><i class="fa fa-inr" style="padding-right:3px;"></i>  {{user?.Purchase | number}}</span></div></li>
+                <li style="color:red !important;"><div style="padding: 5px;font-weight: bold;flex: 1;">Transfered <span style="float: right;padding-right: 10px;"><i class="fa fa-inr" style="padding-right:3px;"></i>  {{user?.Transfered | number}}</span></div></li>
+                <li style="color:red !important;"><div style="padding: 5px;font-weight: bold;flex: 1;">Expense <span style="float: right;padding-right: 10px;"><i class="fa fa-inr" style="padding-right:3px;"></i>  {{user?.Expense | number}}</span></div></li>
+                <li role="separator" class="divider"></li>
+                <li><div style="padding: 5px;font-weight: bold;flex: 1;">Balance <span style="float: right;padding-right: 10px;"><i class="fa fa-inr" style="padding-right:3px;"></i>  {{getTotal() | number}}</span></div></li>
+              </ul> -->
+            </li>
+            <!-- <li><a href="#" style="color:white;font-weight:bold;">Balance: <span class="fa fa-inr"></span> 0</a></li> -->
+
+            <li><a (click)="logout()"><span class="fa fa-sign-out"></span> Logout</a></li>
+          </ul>
+      </div>
+  </div>
+</div>

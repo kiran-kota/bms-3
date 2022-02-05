@@ -1,0 +1,55 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    background-color: lightgrey;
+    padding-top: 50px !important;
+    padding-bottom: 20px;
+    font-size: 9pt !important;
+}
+
+.login-page{
+    background-color: lightseagreen !important;
+}
+
+.multiselect.dropdown-toggle.btn.btn-default{
+    height: 30px !important;
+    line-height: 1.5 !important;
+    font-size: 12px !important;
+    margin-right: 5px !important;
+}
+
+.invalid-feedback{
+    line-height: 2.5 !important;
+    color: red !important;
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+.ng-autocomplete {
+    width: 250px !important;
+    height: 30px !important;
+}
+
+.ui-autocomplete {
+    list-style: none;
+    background-color: gainsboro;
+    width: 80px;
+    padding-left: 10px;
+  }
+
+.ui-helper-hidden-accessible { display:none; }
+
+.text-red{
+    color: red !important;
+}
+.text-green{
+    color: green !important;
+}
+.text-blue{
+    color: blue !important;
+}
+.text-white{
+    color: white !important;
+}
+.fa{
+    cursor: pointer;
+}

@@ -1,0 +1,168 @@
+
+<div class="panel panel-default" id="spt">
+    <div class="panel-heading">
+        <div class="text-center" style="font-weight:bold;font-size:16px;">Smart Purchase Target (SPT)</div>
+    </div>
+    <div class="panel-body" style="min-height:514px;">
+        <div class="form-inline" style="margin-bottom:10px;">
+            <select class="multiselect categories" multiple="multiple" data-value="spt">
+                <option value="{{t.CategoryId}}" *ngFor="let t of categories">{{t.Name}}</option>                
+             </select>
+            <select class="multiselect suppliers" multiple="multiple" data-value="spt">
+                <option value="{{t.AccountId}}" *ngFor="let t of suppliers">{{t.Name}}</option>                
+             </select>
+            <select class="multiselect items" multiple="multiple" data-value="spt">
+                <option value="{{t.ItemId}}" *ngFor="let t of items">{{t.Name}}</option>                
+             </select>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon" id="basic-addon1">30 days %</span>
+                <input type="number" class="form-control input-sm" style="width: 60px !important;height:30px !important;" value="20" aria-describedby="basic-addon1" id="lastOne">
+            </div>
+            <div class="input-group input-group-sm" style="margin-left:5px;">
+                <span class="input-group-addon" id="basic-addon2">15 days %</span>
+                <input type="number" class="form-control" id="lastTwo" style="width: 60px !important;height:30px !important;" value="30" aria-describedby="basic-addon2">
+            </div>
+            <div class="input-group input-group-sm" style="margin-left:5px;">
+                <span class="input-group-addon" id="basic-addon3">7 days %</span>
+                <input type="number" class="form-control" id="lastThree" style="width: 60px !important;height:30px !important;" value="50" aria-describedby="basic-addon3">
+            </div>
+            <div class="input-group input-group-sm" style="margin-left:5px;">
+                <span class="input-group-addon" id="basic-addon4">Future days</span>
+                <input type="number" class="form-control" id="future" style="width: 60px !important;height:30px !important;" value="7" aria-describedby="basic-addon4">
+            </div>
+
+            <button class="btn btn-sm btn-primary" style="margin-left:5px;height:29px !important; width: 80px !important;" (click)="getSmartData()">Submit</button>
+            <button class="btn btn-sm btn-primary" style="margin-left:5px; width: 80px !important;" id="download" (click)="donwloadSmartData()">Download</button>
+
+        </div>
+        <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" >
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Item Name</th>
+                    <th>Last 30 Days</th>
+                    <th>Last 15 Days</th>
+                    <th>Last 7 Days</th>
+                    <th>Prediction/Target</th>
+                    <th>Actual Stock</th>
+                    <th>% Required</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let d of smartdata">
+                    <td>{{d.Code}}</td>
+                    <td>{{d.Name}}</td>
+                    <td>{{d.LastOne}}</td>
+                    <td>{{d.LastTwo}}</td>
+                    <td>{{d.LastThree}}</td>
+                    <td>{{d.Prediction}}</td>
+                    <td>{{d.Available}}</td>
+                    <td>{{d.Required | number: '1.0-0'}}</td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<div class="panel panel-default" id="profit"  *ngIf="role != 'Employee'">
+    <div class="panel-heading form-inline" style="height:50px;">
+        <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, 'profit')">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+            <span style="padding-right:5px;">{{daterange['profit'].start | date : 'mediumDate'}} - {{daterange['profit'].end | date : 'mediumDate'}}</span><b class="caret"></b>
+        </div>
+        <div class="btn-group btn-toggle pull-right" data-value="profit" style="margin-left:10px;">
+            <button class="btn btn-sm btn-default" data-value="line" style="height: 29px !important;" (click)="changeChart('line', 'profit')">Line</button>
+            <button class="btn btn-sm btn-primary active" data-value="column" style="height: 29px !important;" (click)="changeChart('column', 'profit')">Bar</button>
+        </div>
+   
+        <select class="multiselect categories" multiple="multiple" data-value="profit">
+            <option value="{{t.CategoryId}}" *ngFor="let t of categories">{{t.Name}}</option>                
+         </select>
+        <select class="multiselect suppliers" multiple="multiple" data-value="profit">
+            <option value="{{t.AccountId}}" *ngFor="let t of suppliers">{{t.Name}}</option>                
+         </select>
+        <select class="multiselect items" multiple="multiple" data-value="profit">
+            <option value="{{t.ItemId}}" *ngFor="let t of items">{{t.Code}}</option>                
+         </select>
+        <select class="multiselect customers" multiple="multiple" data-value="profit">
+            <option value="{{t.AccountId}}" *ngFor="let t of customers">{{t.Name}}</option>                
+         </select>
+
+
+        <button class="submit btn btn-sm btn-primary" style="margin-left:5px;height:29px !important; width: 80px !important;" data-value="profit" (click)="submit('profit')" [disabled]="loading">Submit</button>
+        <button class="download btn btn-sm btn-primary" style="margin-left:5px; width: 80px !important;" data-value="profit" (click)="download('profit')">Download</button>
+
+    </div>
+    <div class="panel-body">
+        <div id="chart_profit" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </div>
+</div>
+
+
+<div class="panel panel-default" id="sale"  *ngIf="role != 'Employee'">
+    <div class="panel-heading form-inline" style="height:50px;">
+        <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, 'sale')">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+            <span style="padding-right:5px;">{{daterange['sale'].start | date : 'mediumDate'}} - {{daterange['sale'].end | date : 'mediumDate'}}</span><b class="caret"></b>
+        </div>
+        <div class="btn-group btn-toggle pull-right" data-value="profit" style="margin-left:10px;">
+            <button class="btn btn-sm btn-default" data-value="line" style="height: 29px !important;" (click)="changeChart('line', 'sale')">Line</button>
+            <button class="btn btn-sm btn-primary active" data-value="column" style="height: 29px !important;"  (click)="changeChart('column', 'sale')">Bar</button>
+        </div>
+   
+        <select class="multiselect categories" multiple="multiple" data-value="sale">
+            <option value="{{t.CategoryId}}" *ngFor="let t of categories">{{t.Name}}</option>                
+         </select>
+        <select class="multiselect suppliers" multiple="multiple" data-value="sale">
+            <option value="{{t.AccountId}}" *ngFor="let t of suppliers">{{t.Name}}</option>                
+         </select>
+        <select class="multiselect items" multiple="multiple" data-value="sale">
+            <option value="{{t.ItemId}}" *ngFor="let t of items">{{t.Code}}</option>                
+         </select>
+        <select class="multiselect customers" multiple="multiple" data-value="sale">
+            <option value="{{t.AccountId}}" *ngFor="let t of customers">{{t.Name}}</option>                
+         </select>
+
+
+        <button class="submit btn btn-sm btn-primary" style="margin-left:5px;height:29px !important; width: 80px !important;" data-value="sale" (click)="submit('sale')" [disabled]="loading">Submit</button>
+        <button class="download btn btn-sm btn-primary" style="margin-left:5px; width: 80px !important;" data-value="sale" (click)="download('sale')">Download</button>
+
+    </div>
+    <div class="panel-body">
+        <div id="chart_sale" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </div>
+</div>
+
+<div class="panel panel-default" id="purchase" *ngIf="role != 'Employee'">
+    <div class="panel-heading form-inline" style="height:50px;">
+        <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, 'purchase')">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+            <span style="padding-right:5px;">{{daterange['purchase'].start | date : 'mediumDate'}} - {{daterange['purchase'].end | date : 'mediumDate'}}</span><b class="caret"></b>
+        </div>
+        <div class="btn-group btn-toggle pull-right" data-value="profit" style="margin-left:10px;">
+            <button class="btn btn-sm btn-default" data-value="line" style="height: 29px !important;"  (click)="changeChart('line', 'purchase')">Line</button>
+            <button class="btn btn-sm btn-primary active" data-value="column" style="height: 29px !important;"  (click)="changeChart('column', 'purchase')">Bar</button>
+        </div>
+   
+        <select class="multiselect categories" multiple="multiple" data-value="purchase">
+            <option value="{{t.CategoryId}}" *ngFor="let t of categories">{{t.Name}}</option>                
+         </select>
+        <select class="multiselect suppliers" multiple="multiple" data-value="purchase">
+            <option value="{{t.AccountId}}" *ngFor="let t of suppliers">{{t.Name}}</option>                
+         </select>
+        <select class="multiselect items" multiple="multiple" data-value="purchase">
+            <option value="{{t.ItemId}}" *ngFor="let t of items">{{t.Code}}</option>                
+         </select>
+     
+
+
+        <button class="submit btn btn-sm btn-primary" style="margin-left:5px;height:29px !important; width: 80px !important;" data-value="purchase" [disabled]="loading" (click)="submit('purchase')">Submit</button>
+        <button class="download btn btn-sm btn-primary" style="margin-left:5px; width: 80px !important;" data-value="purchase" (click)="download('purchase')">Download</button>
+
+    </div>
+    <div class="panel-body">
+        <div id="chart_purchase" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </div>
+</div>

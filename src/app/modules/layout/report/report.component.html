@@ -1,0 +1,46 @@
+<!-- <div class="container text-center">
+    <button (click)="downloadAsPDF()" class="btn btn-sm btn-success" style="margin: 15px;">Export To PDF</button>
+</div> -->
+<div class="container">
+    <table class="table table-bordered table-striped table-condensed {{ ( i != 0 && i%4 == 0) ? 'pagebreak' : ''}}" *ngFor="let rojmed of rojmeds, let i = index" >
+        <thead>
+            <tr>
+                <th style="width: 200px !important;" *ngIf="!loading">{{rojmeds[i][0].Date | date: 'dd-MM-yyyy'}}</th>
+                <th style="width: 200px !important;" *ngIf="loading">Loading..</th>
+                <th style="width: 100px !important;" class="text-right" *ngFor="let usr of users">{{usr.UserName}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th style="background-color: black !important;color:white !important;">Available</th>
+                <td style="background-color: black !important;color:white !important;" class="text-right" *ngFor="let usr of users"><span class="fa fa-inr text-white" style="background-color: black !important;color:white !important;"></span> {{(rojmeds[i].length > 0 ? getAvailable(usr.UserId, i) : 0) | number}}</td>
+            </tr>
+            <tr>
+                <th>Sale</th>
+                <td class="text-right text-success" *ngFor="let usr of users"><div style="cursor: pointer;"><span class="fa fa-inr"></span> {{(rojmeds[i].length > 0 ? getUser(usr.UserId, i).Sale : 0) | number}}</div></td>
+            </tr>
+            <tr>
+                <th>Received</th>
+                <td class="text-right text-success" *ngFor="let usr of users"><div style="cursor: pointer;"><span class="fa fa-inr"></span> {{(rojmeds[i].length > 0 ? getUser(usr.UserId, i).Received : 0) | number}}</div></td>
+            </tr>
+            <tr>
+                <th>Purchase</th>
+                <td class="text-right text-danger" *ngFor="let usr of users"><div style="cursor: pointer;"><span class="fa fa-inr"></span> {{(rojmeds[i].length > 0 ? getUser(usr.UserId, i).Purchase : 0) | number}}</div></td>
+            </tr>
+            <tr>
+                <th>Transfered</th>
+                <td class="text-right text-danger" *ngFor="let usr of users"><div style="cursor: pointer;"><span class="fa fa-inr"></span> {{(rojmeds[i].length > 0 ? getUser(usr.UserId, i).Transfered : 0) | number}}</div></td>
+            </tr>
+            <tr>
+                <th>Expense</th>
+                <td class="text-right text-danger" *ngFor="let usr of users"><div style="cursor: pointer;"><span class="fa fa-inr"></span> {{(rojmeds[i].length > 0 ? (getUser(usr.UserId, i).Expense * -1) : 0) | number}}</div></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th style="background-color: black !important;color:white !important;">Balance</th>
+                <td style="background-color: black !important;color:white !important;" class="text-right" *ngFor="let usr of users"><span class="fa fa-inr text-white" style="background-color: black !important;color:white !important;"></span> {{(rojmeds[i].length > 0 ? getBalance(usr.UserId, i) : 0) | number}}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

@@ -1,0 +1,153 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+
+        <div class="form-inline">
+          <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+            <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+          </div>
+            <select class="form-control input-sm" style="width:100px;" [(ngModel)]="status" (change)="fetch()">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+            <!-- <select class="form-control input-sm" style="width:150px;margin-left:5px" [(ngModel)]="search" (change)="fetch()">
+                <option value="" selected>Select Option</option>
+                <option value="FirstName">First Name</option>
+                <option value="LastName">Last Name</option>
+                <option value="Company">Company</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Email">Email</option>
+            </select>
+
+            <input style="margin-left:5px;width: 200px;" class="form-control input-sm" value="" type="text" [(ngModel)]="searchBy" name="searchBy" (input)="fetch()" placeholder="Enter to search">
+            <input type="button" value="Search" class="btn btn-sm btn-primary" style="margin-left:5px;" id="searchbtn" /> -->
+            <input type="file" style="display:none;" (change)="onFileChange($event)" id="fileUpload" />
+            <button style="margin-left:5px;" (click)="add()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-plus"></i> Add New</button>
+            <button style="margin-left:5px;" (click)="download()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-download"></i> Download</button>
+            <button style="margin-left:5px;" (click)="upload()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-upload"></i> Upload</button>
+
+        </div>
+    </div>
+    <div class="panel-body" style="min-height: 800px !important;">
+        <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" >
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th style="width:100px; text-align: left;">Amount</th>
+                    <th style="width:100px; text-align: left;">Payment</th>
+                    <th style="width:100px; text-align: left;">Total Due</th>
+                    <th style="width:40px; text-align:center;">Edit</th>
+                    <th style="width:40px; text-align:center;">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let u of filtered">
+                    <td>{{u.Name}}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.Amount | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.Payment | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.TotalDue | number }}</td>
+                    <td class="text-center"><span class="fa fa-edit" (click)="edit(u.AccountId)"></span></td>
+                    <td class="text-center">
+                        <span (click)="delete(u.AccountId)" [class]="u.Status ? 'fa fa-ban text-danger' : 'fa fa-ban text-green'" *ngIf="u.TotalDue == 0"></span>
+                        <span (click)="remove(u.AccountId)" style="margin-left: 10px;" class="fa fa-trash text-danger" *ngIf="u.TotalDue == 0 && !u.Status"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">{{account.AccountId > 0 ? 'Edit Supplier' : 'Add Supplier'}}</h4>
+        </div>
+        <form class="form-horizontal">
+            <div class="modal-body">
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Company</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="account.Name" name="Name" [disabled]="account.AccountId > 0" class="form-control input-sm">
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-group">
+                        <label class="col-sm-3 control-label">First Name</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="account.FirstName" name="FirstName" class="form-control input-sm"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Last Name</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="account.LastName" name="LastName" class="form-control input-sm"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Address</label>
+                        <div class="col-sm-4">
+                            <textarea type="text" [(ngModel)]="account.Address" name="Address" class="form-control input-sm" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Email</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="account.Email" name="Email" class="form-control input-sm"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Mobile No</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="account.Mobile" name="Mobile" class="form-control input-sm">
+                        </div>
+                    </div>  -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Due LImit</label>
+                        <div class="col-sm-4">
+                            <input type="number" [(ngModel)]="account.DueLimit"name="DueLimit" class="form-control input-sm">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Balance</label>
+                        <div class="col-sm-4">
+                            <input type="number" [(ngModel)]="account.Balance" [disabled]="account.AccountId > 0" name="Balance" class="form-control input-sm">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Other</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="account.Other" name="Other" class="form-control input-sm">
+                        </div>
+                    </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm pull-left" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default btn-sm btn-primary" (click)="save()" [disabled]="validate() || loading">Submit</button>
+            </div>
+        </form>
+      </div>
+      </div>
+    </div>
+
+<div class="modal fade" id="tiersTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Tiers</h4>
+            </div>
+            <div class="modal-body" style="padding:10px 0 0 0;">
+               <app-tiers></app-tiers>
+            </div>
+        </div>
+    </div>
+</div>

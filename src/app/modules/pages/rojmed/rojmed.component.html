@@ -1,0 +1,246 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="form-inline">
+            <input type="date" class="form-control input-sm" id="date"/>
+
+            <button class="btn btn-sm btn-primary" style="margin-left:5px;" (click)="search()">Find</button>
+
+            <a href="/report/{{startDate}}/{{endDate}}" target="_blank" style="margin-left:5px;" class="btn btn-primary btn-sm pull-right" *ngIf="role != 'Employee'"><i class="fa fa-download"></i> Download</a>
+            <div *ngIf="role != 'Employee'" id="reportrange" class="form-group pull-right" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+            </div>
+
+        </div>
+    </div>
+    <div class="panel-body" style="min-height:480px;padding:8px;">
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr style="background-color:white;">
+                    <th *ngIf="!loading">{{date | date: 'dd-MM-yyyy'}}</th>
+                    <th *ngIf="loading">Loading..</th>
+                    <th class="text-right" *ngFor="let usr of users">{{usr.UserName}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: lightskyblue;">
+                    <th>Available</th>
+                    <td class="text-right" *ngFor="let usr of users"><span class="fa fa-inr"></span> {{(rojmeds.length > 0 ? getAvailable(usr.UserId) : 0) | number}}</td>
+                </tr>
+                <tr>
+                    <th>Sale</th>
+                    <td class="text-right text-success" *ngFor="let usr of users"><div style="cursor: pointer;" (click)="salesModal(usr.UserId)"><span class="fa fa-inr"></span> {{(rojmeds.length > 0 ? getUser(usr.UserId).Sale : 0) | number}}</div></td>
+                </tr>
+                <tr>
+                    <th>Received</th>
+                    <td class="text-right text-success" *ngFor="let usr of users"><div style="cursor: pointer;" (click)="receivesModal(usr.UserId)"><span class="fa fa-inr"></span> {{(rojmeds.length > 0 ? getUser(usr.UserId).Received : 0) | number}}</div></td>
+                </tr>
+                <tr>
+                    <th>Purchase</th>
+                    <td class="text-right text-danger" *ngFor="let usr of users"><div style="cursor: pointer;" (click)="purchasesModal(usr.UserId)"><span class="fa fa-inr"></span> {{(rojmeds.length > 0 ? getUser(usr.UserId).Purchase : 0) | number}}</div></td>
+                </tr>
+                <tr>
+                    <th>Transfered</th>
+                    <td class="text-right text-danger" *ngFor="let usr of users"><div style="cursor: pointer;" (click)="transfersModal(usr.UserId)"><span class="fa fa-inr"></span> {{(rojmeds.length > 0 ? getUser(usr.UserId).Transfered : 0) | number}}</div></td>
+                </tr>
+                <tr>
+                    <th>Expense</th>
+                    <td class="text-right text-danger" *ngFor="let usr of users"><div style="cursor: pointer;" (click)="expensesModal(usr.UserId)"><span class="fa fa-inr"></span> {{(rojmeds.length > 0 ? (getUser(usr.UserId).Expense * -1): 0) | number}}</div></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="background-color: greenyellow;">
+                    <th>Balance</th>
+                    <td class="text-right" *ngFor="let usr of users"><span class="fa fa-inr"></span> {{(rojmeds.length > 0 ? getBalance(usr.UserId) : 0) | number}}</td>
+                </tr>
+            </tfoot>
+        </table>
+        <button class="btn btn-sm btn-primary pull-left" style="border-radius:50px;width:80px;" (click)="previous()">Prev</button>
+        <button class="btn btn-sm btn-primary pull-right" style="border-radius:50px;width:80px;" (click)="next()">Next</button>
+    </div>
+   
+</div>
+
+
+
+
+
+
+
+<!-- Sale Modal -->
+<div id="salesModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">  
+      <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <b class="modal-title">{{title}} on {{date | date: 'dd/MM/yyyy'}}</b>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Inv.No</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th class="text-right">Grand Total</th>
+                        <th class="text-right">Payment</th>
+                        <th class="text-right">OP</th>
+                        <th class="text-right">Total Due</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of sales">
+                        <td>{{s.InvoiceNo}}</td>
+                        <td>{{s.Date | date: 'medium'}}</td>
+                        <td>{{getAccount(s.AccountId)}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.GrandTotal | number}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.Payment | number}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.OtherPayment | number}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.TotalDue | number}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Purchase Modal -->
+<div id="purchasesModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">  
+      <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <b class="modal-title">{{title}} on {{date | date: 'dd/MM/yyyy'}}</b>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Inv.No</th>
+                        <th>Date</th>
+                        <th>Supplier</th>
+                        <th class="text-right">Grand Total</th>
+                        <th class="text-right">Payment</th>
+                        <th class="text-right">OP</th>
+                        <th class="text-right">Total Due</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of purchases">
+                        <td>{{s.InvoiceNo}}</td>
+                        <td>{{s.Date | date: 'medium'}}</td>
+                        <td>{{getAccount(s.AccountId)}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.GrandTotal | number}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.Payment | number}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.OtherPayment | number}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.TotalDue | number}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+<!-- Receives Modal -->
+<div id="receivesModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">  
+      <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <b class="modal-title">{{title}} on {{date | date: 'dd/MM/yyyy'}}</b>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th class="text-right">Amount</th>
+                        <th class="text-right">From</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of receives">
+                        <td>{{s.Date | date: 'medium'}}</td>
+                        <td>{{s.Description}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.Payment | number}}</td>
+                        <td class="text-right">{{getUserName(s.FromUser)}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Transfers Modal -->
+<div id="transfersModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">  
+      <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <b class="modal-title">{{title}} on {{date | date: 'dd/MM/yyyy'}}</b>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th class="text-right">Amount</th>
+                        <th class="text-right">To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of transfers">
+                        <td>{{s.Date | date: 'medium'}}</td>
+                        <td>{{s.Description}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.Payment | number}}</td>
+                        <td class="text-right">{{getUserName(s.ToUser)}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Expenses Modal -->
+<div id="expensesModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">  
+      <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <b class="modal-title">{{title}} on {{date | date: 'dd/MM/yyyy'}}</b>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Remarks</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of expenses">
+                        <td>{{s.Date | date: 'medium'}}</td>
+                        <td>{{s.Description}}</td>
+                        <td>{{getCategory(s.CategoryId)}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{s.Payment | number}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>

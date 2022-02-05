@@ -1,0 +1,82 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="form-inline">           
+            <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+            </div>
+            <select class="form-control input-sm" [(ngModel)]="status" (change)="fetch()">
+                <option value="true">Completed</option>
+                <option value="false">Deleted</option>
+            </select>
+           
+            <select class="form-control input-sm" style="margin-left:5px;" [(ngModel)]="accountId" (change)="fetch()">
+                <option value="0">All Customers</option>
+                <option value="{{acc.AccountId}}" *ngFor="let acc of accounts">{{acc.Name}}</option>
+            </select>           
+            <select class="form-control input-sm" style="margin-left:5px;" [(ngModel)]="usrId" (change)="fetch()">
+                <option value="0">All Users</option>
+                <option value="{{usr.UserId}}" *ngFor="let usr of users">{{usr.UserName}}</option>
+            </select>           
+            <input type="button" value="Search" class="btn btn-sm btn-primary" style="margin-left:5px;" id="searchbtn" />
+
+            <button style="margin-left:5px;" (click)="add()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading" *ngIf="accountId !='0'"><i class="fa fa-plus"></i> Add New</button>
+            <button style="margin-left:5px;" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading" (click)="download()" *ngIf="role != 'Employee'"><i class="fa fa-download"></i> Download</button>
+            
+        </div>
+    </div>
+    <div class="panel-body" style="min-height: 800px !important;">
+        <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" >
+            <thead>
+                <tr>
+                    <th style="text-align:center; min-width:10px;">No</th>
+                    <th style="text-align:center; min-width:10px;">T</th>
+                    <th style="text-align:left; min-width:100px;">Date</th>
+                    <th>Customer</th>
+                    <th style="min-width:50px;">Amount</th>
+                    <th style="min-width:90px;">PD</th>
+                    <th style="min-width:90px;">Total</th>
+                    <th style="min-width:50px;">Payment</th>
+                    <th style="min-width:90px;">TD</th>
+                    <th style="min-width:50px;">OP</th>
+                    <th style="min-width:60px;">User</th>
+                    <th style="width:10px !important;">Action</th>
+                    <th style="width:10px !important;">Print</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let u of filtered" [class]="checkNegative(u) ? 'text-red' : ''">
+                    <td class="text-center">{{u.InvoiceNo}}</td>
+                    <td class="text-center">{{u.Token}}</td>
+                    <td> {{u.Date | date: 'dd-MM-yyyy HH:mm' }}</td>
+                    <td> {{getAccountName(u.AccountId)}}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.Total | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.PastDue | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.GrandTotal | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.Payment | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.TotalDue | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.OtherPayment | number }}</td>
+                    <td> {{getUserName(u.UserId)}}</td>
+                    <td class="text-center">          
+                        <!-- <p *ngIf="(u.Edit == true && getDifference(u))  && (u.UserId == userId)">e</p> -->
+                        <!-- <b  style="margin-right:10px;" *ngIf="confirmation(u) == 'approved' && (u.UserId != userId) && (!u.Status || u.OtherPayment != 0 || checkNegative(u))">0</b> -->
+                        <b  style="margin-right:10px;" *ngIf="confirmation(u) == 'pending' && (u.UserId != userId) && (!u.Status || u.OtherPayment != 0 || checkNegative(u))">.</b>
+                        <!-- <b  style="margin-right:10px;" *ngIf="confirmation(u) == 'waiting' && (u.UserId == userId) && (u.Edit == false) && (!u.Status || u.OtherPayment != 0 || checkNegative(u))"></b> -->
+                                    
+                        <span class="fa fa-edit text-green" *ngIf="(u.Edit == true && getDifference(u))  && (u.UserId == userId)" style="margin-right:10px;cursor: pointer;" (click)="edit(u)"></span>
+                        <a (click)="delete(u.BillId)" style="cursor: pointer;" *ngIf="(u.Edit == true && getDifference(u))  && (u.UserId == userId)"><span class="fa fa-trash text-red"></span></a>
+                        <span class="fa fa-check text-green" *ngIf="confirmation(u) == 'approved' && (u.UserId != userId) && (!u.Status || u.OtherPayment != 0 || checkNegative(u))"></span>
+                        <span class="fa fa-thumbs-up text-red" (click)="confirm(u.BillId)" *ngIf="confirmation(u) == 'pending' && (u.UserId != userId) && (!u.Status || u.OtherPayment != 0 || checkNegative(u))"></span>
+                        <span class="fa fa-clock-o text-blue" *ngIf="confirmation(u) == 'waiting' && (u.UserId == userId) && (u.Edit == false) && (!u.Status || u.OtherPayment != 0 || checkNegative(u))"></span>
+
+               
+
+
+                    </td>
+                    <td class="text-center"><a href="/print/{{u.BillId}}" target="_blank"><span class="fa fa-print"></span></a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

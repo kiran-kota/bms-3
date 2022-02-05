@@ -1,0 +1,38 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="form-inline">
+            <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+            </div>
+            <input type="button" value="Search" class="btn btn-sm btn-primary" style="margin-left:5px;" id="searchbtn" (click)="load()" />
+
+            <button id="download" style="margin-left:5px;" class="btn btn-primary btn-sm pull-right" (click)="download()"><i class="fa fa-download"></i> Download</button>
+
+
+        </div>
+    </div>
+    <div class="panel-body" style="min-height:480px;">
+        <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" >
+            <thead>
+                <tr>
+                    <th style="min-width:40px;">Id</th>
+                    <th style="min-width:180px; text-align: left;">Date</th>
+                    <th>Deails</th>
+                    <th style="min-width:50px;">User</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let u of filtered">
+                    <td>{{u.HistoryId}}</td>
+                    <td>{{u.Date | date: 'medium'}}</td>
+                    <td>{{u.Description}}</td>
+                    <td>{{getUser(u.UserId)}}</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+>

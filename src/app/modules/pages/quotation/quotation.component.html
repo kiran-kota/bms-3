@@ -1,0 +1,98 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <b>{{id == '0' ? 'Create' : 'Edit'}} Quotation</b>
+    </div>
+    <div class="panel-body" style="min-height:528px;">
+        <div class="content container-fluid">
+            <div class="form-inline">
+                <input type="file" style="display:none;" (change)="onFileChange($event)" id="fileUpload" />
+                <button id="upload" style="margin-left:5px;" class="btn btn-primary btn-sm pull-right" (click)="upload()" [disabled]="loading">Upload</button>
+                <button id="download" style="margin-left:5px;" class="btn btn-primary btn-sm pull-right" (click)="download()" [disabled]="items.length == 0" [disabled]="loading">Download</button>
+                <input type="text" style="margin-left:5px; width:100px;" id="billNo" class="form-control input-sm pull-right" placeholder="ref no" [(ngModel)]="bill.BillNo" name="BillNo" />
+                <input type="text" style="margin-left:5px; width:100px;" class="form-control input-sm pull-right"  [(ngModel)]="bill.InvoiceNo" name="InvoiceNo" disabled />
+                <input type="datetime" style="margin-left:5px;width:180px;" class="form-control input-sm pull-right" value="{{ bill.Date | date: 'medium'}}" disabled />
+                <input class="form-control input-sm pull-right" value="{{getTierCode(tierId) | uppercase}}" style="width: 200px;" disabled />
+            </div>
+            <table class="table" border="0" style="margin-top:50px;" id="mainTable">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th style="width:70px !important;">#</th>
+                        <th>Qty</th>
+                        <th>Available</th>
+                        <th>Selling Price</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <th><input type="text" class="form-control input-sm" id="code" placeholder="Enter Item Code" (focusout)="check($event)" (input)="find($event)" [disabled]="codes.length == 0"/></th>
+                        <th> <input type="checkbox" id="toggle-event" checked data-toggle="toggle" data-size="small" data-on="(+)" data-off="(-)" data-onstyle="success" data-offstyle="danger" /></th>
+                        <th>
+                            <input type="number" class="form-control input-sm" id="qty" [(ngModel)]="billItem.Qty" name="Qty" (input)="calculate()" disabled (keyup.enter)="addItem()" />
+                        </th>
+                        <th><input type="number" class="form-control input-sm" id="avail" disabled /></th>
+                        <th><input type="number" class="form-control input-sm" id="price" [(ngModel)]="billItem.Price" name="Price" disabled /></th>
+                        <th><input type="number" class="form-control input-sm" id="amount" [(ngModel)]="billItem.Amount" name="Amount"  disabled/></th>
+                        <th><button id="add" class="btn btn-primary btn-sm" [disabled] = "!billItem.Amount" >Add</button></th>
+                    </tr>
+                </thead>
+            </table>
+            <table class="table"  style="margin-top:20px; margin-bottom:10px;" align="center">
+                <thead>
+                    <tr style="background-color:lightgray;">
+                        <th style="text-align:left;">Item Code</th>
+                        <th style="text-align:left;width:100px;">Qty</th>
+                        <th style="text-align:center;">Edit/Delete</th>
+                        <th style="text-align:right;">Price (<span class="fa fa-rupee"></span>)</th>
+                        <th style="text-align:right;">Total (<span class="fa fa-rupee"></span>)</th>
+                    </tr>
+                </thead>
+                <tbody id="shc">
+                    <tr *ngFor="let b of billItems">
+                        <td>{{getCode(b.ItemId)}}</td>
+                        <td>{{b.Qty}}</td>
+                        <td style="text-align: center;"><a (click)="editItem(b.ItemId)"><span class="fa fa-edit" style="margin-right:10px;"></span></a><a style="color:red !important;" (click)="deleteItem(b.ItemId)"><span class="fa fa-trash"></span></a></td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{b.Price}}</td>
+                        <td class="text-right"><span class="fa fa-inr"></span> {{b.Amount}}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="text-align:right"><b>Total Qty</b></td>
+                        <td><input type="number" class="price form-control input-sm pull-right" id="q" style="max-width:100px;" disabled [(ngModel)]="bill.Qty" /></td>
+                        <td colspan="2" style="text-align:right"></td>
+                        <td style="text-align:right;" ><b style="margin-right:15px;">Total (<span class="fa fa-rupee"></span>)</b><input type="text" style="max-width:150px;" class="price form-control input-sm pull-right text-right" id="total" [(ngModel)]="bill.Total" disabled /></td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="text-align:right;border:0 solid red;"><b>Last Bill No</b></td>
+                        <td style="border:0 solid red;"><input type="number" class="form-control input-sm pull-right" style="max-width:100px;" [(ngModel)]="bill.LastBillNo" disabled /></td>
+                        <td colspan="2" style="text-align: right;border:0 solid red;"></td>
+                        <td style="border:0 solid red;text-align:right;"> <b style="margin-right:15px;">Last Bill Due (<span class="fa fa-rupee"></span>)</b><input type="text" style="max-width:150px;" class="form-control input-sm pull-right text-right" [(ngModel)]="bill.PastDue"  name="PastDue" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" rowspan="3"><textarea class="form-control input-sm pull-left"  rows="4" id="remarks" placeholder="enter remarks" [(ngModel)]="bill.Remarks" name="Remarks" ></textarea></td>
+                        <td style="text-align:right;"><b style="margin-right:15px;">Grand Total (<span class="fa fa-rupee"></span>)</b><input type="text" style="max-width:150px;" class="form-control input-sm pull-right text-right" name="GrandTotal" [(ngModel)]="bill.GrandTotal" disabled /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;border:0 solid red;"><b style="margin-right:15px;"> <input type="checkbox" (change)="onChangePayment()" [(ngModel)]="checkPayment" style="line-height: 1.0 !important;"> Shipping (<span class="fa fa-rupee"></span>)</b><input type="number" style="max-width:150px;" class="form-control input-sm pull-right text-right" [(ngModel)]="bill.Payment" name="Payment" (input)="addPayment()" /></td>
+                    </tr>
+                    <tr>
+                        <td  [hidden]="!checkPayment" style="text-align:right;border:0 solid red;"><b style="margin-right:15px;">GST (<span class="fa fa-rupee"></span>)</b>
+                            <!-- <input type="checkbox" id="op-event" checked data-toggle="toggle" data-size="small" data-on="ON" data-off="OFF"  data-width="50" data-onstyle="success" data-offstyle="danger" /> -->
+                            <input type="number" style="max-width:150px;" class="form-control input-sm pull-right text-right"  [(ngModel)]="bill.OtherPayment" name="OtherPayment" [(ngModel)]="bill.OtherPayment" name="OtherPayment" (input)="addPayment()" />
+                        </td>
+                    </tr>
+                   
+                    <tr style="border:0 solid red;text-align:right;">
+                        <td colspan="4" rowspan="2" style="text-align: left;font-weight:bold;"></td>
+                        <td><b style="margin-right:15px;">Total Due (<span class="fa fa-rupee"></span>)</b><input type="text" style="max-width:150px;" class="form-control input-sm pull-right text-right" [(ngModel)]="bill.TotalDue" name="TotalDue" disabled /></td>
+                    </tr>
+                </tfoot>
+
+            </table>
+
+            <!-- <button id="print" class="btn btn-danger btn-sm pull-right" [disabled]="loading" (click)="save(true)">Save & Print</button> -->
+            <button id="save" class="btn btn-primary btn-sm pull-right" style="margin-right: 15px;" [disabled]="loading || bill.Remarks == '' || bill.Remarks == undefined" (click)="save(false)">Save & Back</button>
+        </div>
+    </div>
+</div>

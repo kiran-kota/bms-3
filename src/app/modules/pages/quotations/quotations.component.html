@@ -1,0 +1,76 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="form-inline">           
+            <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+            </div>
+            <!-- <select class="form-control input-sm" [(ngModel)]="status" (change)="fetch()">
+                <option value="true">Pending</option>
+                <option value="false">Completed</option>
+            </select> -->
+           
+            <select class="form-control input-sm" style="margin-left:5px;" [(ngModel)]="tierId" (change)="fetch()">
+                <option value="0">All Tiers</option>
+                <option value="{{tier.TierId}}" *ngFor="let tier of tiers">{{tier.Code}}</option>
+            </select>           
+            <input type="button" value="Search" class="btn btn-sm btn-primary" style="margin-left:5px;" id="searchbtn" />
+
+            <button style="margin-left:5px;" (click)="add()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading" *ngIf="tierId !='0'"><i class="fa fa-plus"></i> Add New</button>
+            
+        </div>
+    </div>
+    <div class="panel-body" style="min-height: 800px !important;">
+        <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" >
+            <thead>
+                <tr>                 
+                    <th style="text-align:left; min-width:10px;">Sr</th>
+                    <th style="text-align:left; min-width:100px;">Date</th>
+                    <th>Remkarks</th>
+                    <th style="min-width:40px;">Qty</th>
+                    <th style="min-width:50px;">Amount</th>
+                    <th style="min-width:50px;">Shipping</th>
+                    <th style="min-width:50px;">GST</th>
+                    <th style="min-width:70px;">Total Due</th>
+                    <th style="min-width:50px;">Tier</th>
+                    <th class="text-center" style="min-width:10px;">User</th>
+                    <th class="text-center" style="width:10px !important;">Action</th>
+                    <th class="text-center" style="width:10px !important;">Print</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let u of filtered, let i=index">
+                    <td>{{i+1}}</td>
+                    <td> {{u.data.Date | date: 'dd-MM-yyyy HH:MM' }}</td>
+                    <td>{{u.data.Remarks}}</td>
+                    <td class="text-right">{{u.data.Qty}}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.data.GrandTotal}}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.data.Payment}}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.data.OtherPayment}}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.data.TotalDue}}</td>
+                    <td>{{getTierCode(u.data.AccountId)}}</td>
+                    <td class="text-center">{{getUserName(u.data.UserId)}}</td>
+                    <td class="text-center"><span class="fa fa-edit text-green" (click)="edit(u)" *ngIf="u.data.UserId == userId"></span><span class="fa fa-trash text-red" (click)="delete(u)" style="margin-left: 15px;"  *ngIf="u.data.UserId == userId"></span></td>
+                    <td class="text-center"><span class="fa fa-link text-green" (click)="confirm(u)"  *ngIf="u.data.UserId == userId"></span><span class="fa fa-print text-blue" style="margin-left: 15px;" (click)="print(u, i+1)" ></span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="modal fade" id="customersTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">          
+            <div class="modal-body">
+                    <div class="form-inline">
+                            <select type="number" [(ngModel)]="seletedAccountId" name="selectedAccountId" style="min-width: 200px;" class="form-control input-sm">  
+                                <option value="{{t.AccountId}}" *ngFor="let t of selected">{{t.Name}}</option>
+                            </select>        
+                            <button class="btn btn-primary btn-sm pull-right" (click)="export()" [disabled]="seletedAccountId == null">Submit</button>                  
+                    </div> 
+            </div>
+        </div>
+    </div>
+</div>
+  

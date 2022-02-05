@@ -1,0 +1,25 @@
+<div style="padding: 0px 20px 20px 20px !important;">
+    <div class="form-inline" style="margin-bottom:20px !important;">
+        <input style="margin-left:5px;width: 200px;" class="form-control input-sm" value="" type="text" [(ngModel)]="tier.Code" name="Code" placeholder="Enter Code">
+        <input style="margin-left:5px;width: 270px;" class="form-control input-sm" value="" type="text" [(ngModel)]="tier.Name" name="Name" placeholder="Enter Name">
+        <input type="button" value="Submit" class="btn btn-sm btn-primary" style="margin-left:5px;" (click)="save()" />
+    </div>
+    <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"  style="margin-top:10px !important;" width="100%">
+        <thead>
+            <tr>
+                <th style="width:200px !important;">Code</th>
+                <th>Name</th>
+                <th style="width:20px; text-align:center;">Edit</th>
+                <th style="width:20px; text-align:center;">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let u of filtered">
+                <td>{{u.Code}}</td>
+                <td>{{u.Name}}</td>
+                <td class="text-center"><span class="fa fa-edit" (click)="edit(u)"></span></td>
+                <td class="text-center"><span (click)="delete(u)" class="fa fa-ban text-danger"></span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

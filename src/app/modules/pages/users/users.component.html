@@ -1,0 +1,127 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="form-inline">           
+            <select class="form-control input-sm" style="width:100px;" [(ngModel)]="status" (change)="fetch()">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+            <select class="form-control input-sm" style="width:150px;margin-left:5px" id="search" [(ngModel)]="search" (change)="fetch()">
+                <option value="" selected>Select Option</option>              
+                <option value="Mobile">Mobile</option>
+                <option value="Email">Email</option>
+            </select>
+
+            <input style="margin-left:5px;width: 200px;" class="form-control input-sm" value="" type="text" id="searchBy" placeholder="Enter to search" [(ngModel)]="searchBy" name="searchBy" (input)="fetch()">
+            <input type="button" value="Search" class="btn btn-sm btn-primary" style="margin-left:5px;" id="searchbtn" />
+
+            <button style="margin-left:5px;" (click)="add()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="data.length == 0" *ngIf="role !='Employee'"><i class="fa fa-plus"></i> Add New</button>
+        </div>
+    </div>
+    <div class="panel-body" style="min-height: 800px !important;">
+        <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" >
+            <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th style="width:100px">Role</th>
+                    <th style="width:100px">Balance</th>
+                    <th style="width:40px" class="text-center">Edit</th>
+                    <th style="width:40px" class="text-center">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let u of filtered">
+                    <td>{{u.UserName}}</td>
+                    <td>{{u.Role}}</td>
+                    <td class="text-right"><a href="/rojmed"><span class="fa fa-inr"></span> {{ u.TotalDue | number }}</a></td>
+                    <td class="text-center"><span *ngIf="(u.UserId == userId) || role == 'Admin' || (u.Role == 'Employee' && role == 'Owner')" class="fa fa-edit text-green" (click)="edit(u.UserId)"></span></td>
+                    <td class="text-center"><span (click)="delete(u.UserId)" [class]="u.Status ? 'fa fa-ban text-danger' : 'fa fa-check text-green'" *ngIf="u.TotalDue == 0"></span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">{{user.UserId > 0 ? 'Edit User' : 'Add User'}}</h4>
+        </div>
+        <form class="form-horizontal">
+            <div class="modal-body">
+                
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">User Name</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="user.UserName" name="UserName" [disabled]="user.UserId > 0" class="form-control input-sm">                            
+                        </div>     
+                                       
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Password</label>
+                        <div class="col-sm-4">
+                            <input type="password" [(ngModel)]="user.Password" name="password" class="form-control input-sm">                            
+                        </div>                        
+                    </div>      
+                    <!-- <div class="form-group">
+                        <label class="col-sm-3 control-label">Pin</label>
+                        <div class="col-sm-4">
+                            <input type="password" [(ngModel)]="user.Pin" name="Pin" class="form-control input-sm">                            
+                        </div>                       
+                    </div>  -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Role</label>
+                        <div class="col-sm-4">
+                            <select class="form-control input-sm" [(ngModel)]="user.Role" name="Role" [disabled]="user.UserId > 0">
+                                <option value=""></option>
+                                <option value="Admin">Admin</option>
+                                <option value="Owner">Owner</option>
+                                <option value="Employee">Employee</option>
+                            </select>                           
+                        </div>                       
+                    </div> 
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Email</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="user.Email" name="Email" class="form-control input-sm"/>                            
+                        </div>                        
+                    </div>   
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Mobile No</label>
+                        <div class="col-sm-4">
+                            <input type="text" [(ngModel)]="user.Mobile" name="Mobile" class="form-control input-sm">                            
+                        </div>                       
+                    </div> 
+                                 
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Balance</label>
+                        <div class="col-sm-4">
+                            <input type="number" [(ngModel)]="user.Balance" [disabled]="user.UserId > 0" name="Balance" class="form-control input-sm">                            
+                        </div>                        
+                    </div> 
+                    
+                    <div class="form-group" [hidden]="user.Role != 'Employee' || role == 'Employee'">
+                        <label class="col-sm-3 control-label">Permissions</label>
+                        <div class="col-sm-6">
+                            <select class="multiselect permissions" multiple="multiple" data-value="spt">
+                                <option value="{{r}}" *ngFor="let r of roles">{{r}}</option>
+                              
+                             </select>
+                        </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm pull-left" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default btn-sm btn-primary" (click)="save()" [disabled]="validate() || loading">Submit</button>
+            </div>
+        </form>
+      </div>
+      </div>
+    </div>
+
+  

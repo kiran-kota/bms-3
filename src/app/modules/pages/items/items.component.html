@@ -1,0 +1,233 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="form-inline">
+            <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+              <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+              <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+            </div>
+            <select class="form-control input-sm" style="width:100px;" [(ngModel)]="status" (change)="fetch()">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+            <select class="form-control input-sm" style="margin-left:5px;" [(ngModel)]="categoryId" (change)="fetch()">
+                <option value="0">All Categories</option>
+                <option value="{{cat.CategoryId}}" *ngFor="let cat of categories">{{cat.Name}}</option>
+            </select>
+            <select class="form-control input-sm" style="margin-left:5px;" [(ngModel)]="accountId" (change)="fetch()">
+                <option value="0">All Suppliers</option>
+                <option value="{{acc.AccountId}}" *ngFor="let acc of accounts">{{acc.Name}}</option>
+            </select>
+            <button class="btn btn-sm btn-primary" style="margin-left:5px;" (click)="fetch()" [disabled]="loading">Search</button>
+
+            <input type="file" style="display:none;" (change)="onFileChange($event)" id="fileUpload" />
+            <button *ngIf="role !='Employee'" style="margin-left:5px;" (click)="add()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-plus"></i> Add New</button>
+            <button *ngIf="role !='Employee'" style="margin-left:5px;" (click)="show()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-list"></i> Categories</button>
+            <button style="margin-left:5px;" (click)="download()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-download"></i> Download</button>
+            <button *ngIf="role !='Employee'" style="margin-left:5px;" (click)="finalsheet()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-download"></i> Final Sheet</button>
+            <button *ngIf="role !='Employee'" style="margin-left:5px;" (click)="upload()" class="btn btn-sm btn-primary form-group pull-right" [disabled]="loading"><i class="fa fa-upload"></i> Upload</button>
+
+        </div>
+    </div>
+    <div class="panel-body" style="min-height: 800px !important;">
+        <table class="table table-stripped table-responsive"  datatable  [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" >
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th style="text-align:center;min-width:70px;">Purchased</th>
+                    <th style="text-align:center;min-width:70px;">Sold</th>
+                    <th style="text-align:center;min-width:70px;">Available</th>
+                    <th style="text-align:left; min-width:70px;">Silver Price</th>
+                    <th style="text-align:right; min-width:90px;">Total</th>
+                    <th style="width:50px;">Edit</th>
+                    <th style="width:50px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let u of filtered">
+                    <td>{{u.Code}}</td>
+                    <td>{{u.Name}}</td>
+                    <td class="text-right"><span *ngIf="u.BillItemPurchased.length == 0">{{u.Purchased + u.Stock | number }}</span><a *ngIf="u.BillItemPurchased.length > 0" style="cursor: pointer;" (click)="showMore(u, 'purchased')"> {{u.Purchased + u.Stock | number }}</a></td>
+                    <td class="text-right"><span *ngIf="u.BillItemSold.length == 0">{{u.Sold | number }}</span><a *ngIf="u.BillItemSold.length > 0" style="cursor: pointer;" (click)="showMore(u, 'sold')"> {{u.Sold | number }}</a></td>
+                    <td class="text-right"> {{(u.Purchased + u.Stock - u.Sold) | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{u.Price | number }}</td>
+                    <td class="text-right"><span class="fa fa-inr"></span> {{((u.Purchased + u.Stock - u.Sold) * u.Price) | number }}</td>
+                    <td class="text-center"><span class="fa fa-edit" (click)="edit(u.ItemId)" *ngIf="role !='Employee'"></span></td>
+                    <td class="text-center">
+                        <span (click)="delete(u.ItemId)" [class]="u.Status ? 'fa fa-ban text-danger' : 'fa fa-repeat text-green'" *ngIf="(u.Purchased + u.Stock - u.Sold) == 0 && (this.role == 'Owner')"></span>
+                        <span (click)="remove(u.ItemId)" style="margin-left: 10px;" class="fa fa-trash text-danger" *ngIf="(u.Purchased + u.Stock - u.Sold) == 0 && (this.role == 'Owner') && u.Status == false"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">{{item.ItemId > 0 ? 'Edit Item' : 'Add Item'}}</h4>
+        </div>
+        <form class="form-horizontal">
+            <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Item Code</label>
+                                <div class="col-sm-8">
+                                    <input type="text" [(ngModel)]="item.Code" name="Code" [disabled]="item.ItemId > 0" class="form-control input-sm">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Item Name</label>
+                                <div class="col-sm-8">
+                                    <input type="text" [(ngModel)]="item.Name" name="Name" class="form-control input-sm"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Category</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control input-sm" name="CategoryId" [(ngModel)]="item.CategoryId" [disabled]="item.ItemId > 0">
+                                        <option value="{{cat.CategoryId}}" *ngFor="let cat of categories">{{cat.Code}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Comment</label>
+                                <div class="col-sm-8">
+                                    <textarea type="text" rows="3" [(ngModel)]="item.Comment" name="Comment" class="form-control input-sm"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Init. Qty</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control input-sm" [(ngModel)]="item.Qty" name="Qty" [disabled]="item.ItemId > 0">
+                                    </div>
+                                </div>
+                                <div class="form-group" *ngFor="let t of itemTiers">
+                                    <label class="col-sm-4 control-label">{{getTierCode(t.TierId)}} (<span class="fa fa-inr"></span>)</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control input-sm" [value]="t.Price" id="{{t.TierId}}_Price" >
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table" id="suppliersTable">
+                                <thead>
+                                    <tr>
+                                        <th colspan="5" class="text-center">Supplier Details</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="width:250px;">
+                                            <input type="text" class="form-control input-sm"  id="code" type="text" (focusout)="check($event)" (input)="find($event)">
+                                        </th>
+
+                                        <th style="width:100px;">
+                                            <input type="number" class="form-control input-sm" disabled value="0" name="Qty" id="qty">
+                                        </th>
+                                        <th style="width:100px;">
+                                            <input type="number" class="form-control input-sm" [(ngModel)]="itemSupplier.Rate" name="Rate">
+                                        </th>
+                                        <th colspan="2">
+                                            <input type="submit" class="btn btn-primary btn-sm btn-block" (click)="addItemSupplier()" value="Add">
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Qty</th>
+                                        <th class="text-right">Rate ( <span class="fa fa-inr"></span> )</th>
+                                        <th class="text-center">Edit</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let s of itemSuppliers">
+                                        <td>{{getSupplierName(s.AccountId)}}</td>
+                                        <td>{{s.Qty}}</td>
+                                        <td class="text-right"><span class="fa fa-inr"></span> {{s.Rate | number}}</td>
+                                        <td class="text-center">
+                                            <a (click)="editItemSupplier(s)"><span class="fa fa-edit text-green"></span></a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a (click)="deleteItemSupplier(s)" ><span class="fa fa-ban text-red"></span></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm pull-left" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default btn-sm btn-primary" (click)="save()" [disabled]="validate() || loading">Submit</button>
+            </div>
+        </form>
+      </div>
+      </div>
+    </div>
+
+<div class="modal fade" id="categoriesTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Categories</h4>
+            </div>
+            <div class="modal-body" style="padding:10px 0 0 0;">
+               <app-categories>
+               </app-categories>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sale Modal -->
+<div id="reportModal" class="modal fade" role="dialog"  data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <b class="modal-title">{{title}}</b>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Inv.No</th>
+                        <th>Date</th>
+                        <th>Name</th>
+                        <th class="text-right">Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of report">
+                        <td>{{s.InvoiceNo}}</td>
+                        <td>{{s.Date | date: 'medium'}}</td>
+                        <td>{{s.Name}}</td>
+                        <td class="text-right">{{s.Qty | number}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>

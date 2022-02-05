@@ -1,0 +1,58 @@
+input[type="password"]::placeholder { /* Firefox, Chrome, Opera */
+    color: white;
+} 
+
+.mn-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+    font-size: 16px;
+    color: #fff;
+    line-height: 200px;
+    text-align: center;
+    background: #5695e2;
+    position: fixed; /* or absolute */
+    top: 50%;
+    left: 55%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+}
+
+#password {    
+    text-align: center !important;
+    background-color: transparent !important;
+    border: none !important;
+    color: white !important;  
+    width: 100px !important;
+}
+input:focus, textarea:focus, select:focus {
+    outline: none;
+}
+input.middle:focus {
+    outline-width: 0;
+}
+
+.count {
+    font-size: 20px;
+    font-family: Arial;
+    font-weight: bold;
+}
+
+h3 {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.panel-body h3 {
+    font-size: 15px !important;
+}
+
+.sub {
+    text-align: center;
+    padding: 0;
+    margin-top: 5px;
+    font-family: Calibri;
+    font-size: 14px;
+    font-weight: bold;
+}

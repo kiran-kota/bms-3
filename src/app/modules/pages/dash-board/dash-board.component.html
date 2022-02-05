@@ -1,0 +1,395 @@
+<div class="container-fluid" id="hideCont" style="display:block; text-align:center;">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 text-center">
+            <div class="mn-circle btn btn-sm text-center" id="go">
+                <!-- <input type="password" id="password" placeholder="Go" *ngIf="!loading" (keyup.enter)="goForDashboard()" [(ngModel)]="pin" name="pin" /> -->
+                <p *ngIf="loading">Loading...</p>
+                <p *ngIf="!loading" (click)="goForDashboard()">Go</p>
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+
+<div id="content" style="display:none;">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <p style="font-size:16px; font-weight:bold;text-align:center;background-color:white;font-family:Calibri;">Today's Summary</p>
+        </div>
+        <div class="col-xs-2 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>{{summary?.summary.Invoices | number}}</h3>
+                    <div class="sub"><a href="/sales" class="today" data-value="/bills/sales">Invoices</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-2 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{summary?.summary.Sale | number}}</h3>
+                    <div class="sub"><a href="/sales" class="today" data-value="/bills/sales">Sales</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-2 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{summary?.summary.Profit | number}}</h3>
+                    <div class="sub"><a href="/sales" class="today" data-value="/bills/sales">Profit</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-2 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{summary?.summary.Payment | number}}</h3>
+                    <div class="sub"><a href="/sales" class="today" data-value="/bills/sales">Payments</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-2 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>{{summary?.summary.Qty | number}}</h3>
+                    <div class="sub"><a href="/sales" class="today" data-value="/bills/sales">Qty</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-2 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>{{summary?.summary.Expense | number}}</h3>
+                    <div class="sub"><a href="/expenses" class="today" data-value="/Expenses">Expenses</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <p style="font-size:16px; font-weight:bold;text-align:center;background-color:white;font-family:Calibri;">Performance</p>
+        </div>
+        <div class="col-xs-12 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="height:50px;">
+                    <div style="margin-bottom: 20px;" class="form-inline">
+                    <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                        <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+                    </div>
+                    <button class="btn btn-sm btn-primary" id="submit" style="margin-left:5px;" (click)="loadDashboard()"  [disabled]="loading">Submit</button>   
+                </div>                
+                </div>
+                <div class="panel-body">
+                    <div id="chart_dashboard" style="min-width: 310px; height: 400px; margin: 0 auto">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="chart_customer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="chart_supplier" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12" style="display:none;">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="sub">Company Balance</div>
+                </div>
+                <div class="panel-body">
+                    <div class="parent tots">
+                        <div id="ta_sum">
+                            <div id="sum_tot" style="font-size: 14px;font-weight: bold;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3 id="invoices">{{data?.summary.Invoices | number}}</h3>
+                    <div class="sub"><a href="/sales" class="range" data-value="/bills/sales">Invoices</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{data?.summary.Sale | number}}</h3>
+                    <div class="sub"><a href="/sales" class="range" data-value="/bills/sales">Sales</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{data?.summary.Profit | number}}</h3>
+                    <div class="sub"><a href="/sales" class="range" data-value="/bills/sales">Profits</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{data?.summary.Payment | number}}</h3>
+                    <div class="sub"><a href="/sales" class="range" data-value="/bills/sales">Payment</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>{{data?.summary.Qty | number}}</h3>
+
+                    <div class="sub"><a href="/sales" class="range" data-value="/bills/sales">Qty</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{data?.summary.Expense | number}}</h3>
+
+                    <div class="sub"><a href="/expenses" class="range" data-value="/Expenses">Expense</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <p style="font-size:16px; font-weight:bold;text-align:center;background-color:white;font-family:Calibri;">Company Status</p>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3 id="cust_tot">{{summary?.Customers | number}}</h3>
+                    <div class="sub"><a href="/customers">Customers</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3 id="sup_tot">{{summary?.Suppliers | number}}</h3>
+                    <div class="sub"><a href="/suppliers">Suppliers</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3 id="items_tot">{{summary?.Items | number}}</h3>
+                    <div class="sub"><a href="/items">Products</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-rupee"></span> {{summary?.companyBalance.Total | number}}</h3>
+                    <div class="sub"><a href="#" id="company_link">Comapny Balance</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="balance-part" style="display:none;">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="height:40px;">
+                    <p style="font-weight:bold; text-align:center; font-size:14px;">Company Balance</p>
+                </div>
+                <div class="panel-body" style="background-color:white; min-height:550px;text-align:center;">
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="500" viewBox="0 0 500 500">
+                        <defs>
+                            <style>
+
+                                .cls-1 {
+                                    clip-path: url(#clip-circles);
+                                    font-size: 14px;
+                                    font-family: SegoeUI, Segoe UI;
+                                    fill: #fff;
+                                }
+
+                                .cls-2 {
+                                    fill: #1b1464;
+                                }
+
+                                .cls-3 {
+                                    fill: #006837;
+                                }
+
+                                .cls-4 {
+                                    fill: #817808;
+                                }
+
+                                .cls-5 {
+                                    fill: #f00f17;
+                                }
+
+                                .cls-6 {
+                                    fill: #5695e2;
+                                }
+
+                                .cls-7 {
+                                    font-size: 16px;
+                                    font-family: SegoeUI-Bold, Segoe UI;
+                                    font-weight: 700;
+                                }
+
+                                .cls-b {
+                                    font-size: 12px;
+                                    font-family: SegoeUI-Bold, Segoe UI;
+                                    font-weight: 700;
+                                    text-decoration-line: underline;
+                                }
+
+
+                                .cls-p1 {
+                                    fill: #1b1464;
+                                    stroke: none;
+                                }
+
+                                .cls-l1 {
+                                    fill: none;
+                                    stroke: #1b1464;
+                                    stroke-width: 8px;
+                                }
+
+                                .cls-p2 {
+                                    fill: #006837;
+                                    stroke: none;
+                                }
+
+                                .cls-l2 {
+                                    fill: none;
+                                    stroke: #006837;
+                                    stroke-width: 8px;
+                                }
+
+                                .cls-p3 {
+                                    fill: #817808;
+                                    stroke: none;
+                                }
+
+                                .cls-l3 {
+                                    fill: none;
+                                    stroke: #817808;
+                                    stroke-width: 8px;
+                                }
+
+                                .cls-p4 {
+                                    fill: #F00F17;
+                                    stroke: none;
+                                }
+
+                                .cls-l4 {
+                                    fill: none;
+                                    stroke: #F00F17;
+                                    stroke-width: 8px;
+                                }
+                            </style>
+                            <clipPath id="clip-circles">
+                                <rect width="500" height="500" />
+                            </clipPath>
+                        </defs>
+                        <g id="circles" class="cls-1">
+                            <rect width="500" height="500" />
+                            <g transform="translate(50 50)">
+                                <circle class="cls-2" cx="60" cy="60" r="60" />
+                                <text class="cls-b" alignment-baseline="middle" text-anchor="middle" x="60" y="40">Stock</text>
+                                <text alignment-baseline="middle" text-anchor="middle" x="60" y="60">{{summary?.companyBalance.Stock | number}}</text>
+                            </g>
+                            <g transform="translate(300 50)">
+                                <circle class="cls-3" cx="60" cy="60" r="60" />
+                                <text class="cls-b" alignment-baseline="middle" text-anchor="middle" x="60" y="40">Cash on Hand</text>
+                                <text alignment-baseline="middle" text-anchor="middle" x="60" y="60">{{summary?.companyBalance.Cash | number}}</text>
+                            </g>
+                            <g transform="translate(50 350)">
+                                <circle class="cls-4" cx="60" cy="60" r="60" />
+                                <text class="cls-b" alignment-baseline="middle" text-anchor="middle" x="60" y="40">Customers Due</text>
+                                <text alignment-baseline="middle" text-anchor="middle" x="60" y="60">{{summary?.companyBalance.CustomersDue | number}}</text>
+                            </g>
+                            <g transform="translate(300 350)">
+                                <circle class="cls-5" cx="60" cy="60" r="60" />
+                                <text class="cls-b" alignment-baseline="middle" text-anchor="middle" x="60" y="40">Suppliers Due</text>
+                                <text alignment-baseline="middle" text-anchor="middle" x="60" y="60">{{summary?.companyBalance.SuppliersDue | number}}</text>
+                            </g>
+                            <g transform="translate(160 185)">
+                                <circle class="cls-6" cx="75" cy="75" r="75" />
+                                <text class="cls-7" alignment-baseline="middle" text-anchor="middle" x="75" y="75">{{summary?.companyBalance.Total | number}}</text>
+                            </g>
+                            <g id="pointer" transform="translate(142 160) rotate(5)">
+                                <line class="cls-l1" x2="36" y2="36" />
+                                <g id="finger" class="cls-c" transform="translate(55 35) rotate(130)">
+                                    <path class="cls-p1" d="M 25 19 L 0 19 L 12 1 L 25 19 Z" />
+                                </g>
+                            </g>
+                            <g id="pointer" transform="translate(350 160)">
+                                <line class="cls-l2" x2="36" y2="32" transform="translate(-20 1) rotate(90)" />
+                                <g id="finger" class="cls-c" transform="translate(-55 59) rotate(220)">
+                                    <path class="cls-p2" d="M 25 19 L 0 19 L 12 1 L 25 19 Z" />
+                                </g>
+                            </g>
+                            <g id="pointer" transform="translate(150 370) rotate(280)">
+                                <line class="cls-l3" x2="40" y2="29" transform="translate(3 1) rotate(0)" />
+                                <g id="finger" class="cls-c" transform="translate(65 30) rotate(128)">
+                                    <path class="cls-p3" d="M 25 19 L 0 19 L 12 1 L 25 19 Z" />
+                                </g>
+                            </g>
+                            <g id="pointer" transform="translate(280 320) rotate(5)">
+                                <line class="cls-l4" x2="36" y2="36" />
+                                <g id="finger" class="cls-c" transform="translate(55 35) rotate(130)">
+                                    <path class="cls-p4" d="M 25 19 L 0 19 L 12 1 L 25 19 Z" />
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="height:50px;">
+                    <div style="margin-bottom: 20px;" class="form-inline">
+                    <div id="reportrange" class="form-group" style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; margin-right: 3px;"  daterangepicker [options]="options" (selected)="selectedDate($event, daterange)">
+                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                        <span style="padding-right:5px;">{{daterange.start | date : 'mediumDate'}} - {{daterange.end | date : 'mediumDate'}}</span><b class="caret"></b>
+                    </div>
+                    <button class="btn btn-sm btn-primary" id="submit" style="margin-left:5px;" [disabled]="loading" (click)="loadBalance()">Submit</button>   
+                </div>                
+                </div>
+                <div class="panel-body">
+                    <div id="chart_company" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+

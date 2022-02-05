@@ -1,0 +1,83 @@
+<div class="container" style="margin: 15px !important;">
+    <div class="row">
+        <div style="display: inline-block; border: 1px solid black; padding:10px 0px; margin: 10px 0px !important;">
+            <div class="col-xs-6 pull-left">
+                <b>{{data?.Remarks}}</b><br />
+            </div>
+            <div class="col-xs-6 pull-right" style="text-align: right">
+                <p>
+                    <b>No #: {{token}}</b><br />
+                    {{data?.Date | date : 'medium'}} 
+                </p>
+            </div>
+
+            <div class="col-xs-12">
+
+                <table class="table" style="border-collapse: collapse;margin-top:0;padding-top:0;margin-bottom:5px;padding-bottom:0;">
+                    <tr style="border-bottom:1px solid black;" class="no-highlight-border">
+                        <th width="5%" style="text-align:left;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">S.No.</th>
+                        <th width="10%" style="text-align:left;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Qty</th>
+                        <th width="20%" style="text-align:left;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Item</th>
+                        <th width="20%" style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Price</th>
+                        <th width="20%" style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Amount</th>
+                    </tr>
+                    <tr *ngFor="let item of items, let i = index" [class]="check(i) ? 'highlight-border': 'no-highlight-border'"> 
+                        <td style="padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">{{i + 1}}</td>
+                        <td style="padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">{{item.Qty}}</td>
+                        <td style="padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">{{getItem(item.ItemId)}}</td>
+                        <td style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;"> <i class="fa fa-rupee" style="margin-right:3px;"></i>{{item.Price | number}}</td>
+                        <td style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;"> <i class="fa fa-rupee" style="margin-right:3px;"></i>{{item.Amount | number}}</td>
+                    </tr>
+                    <tr style="border-top: 1px solid black;">
+                        <td  colspan="3" style="text-align: left;font-weight: bold;">Total Qty: {{data?.Qty}}</td>
+                        <td colspan="2" style="text-align: right;font-weight: bold;">Total: <span class="fa fa-inr"></span> {{data?.Total | number}}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid black;">
+                        <td colspan="5" style="text-align: right;">L.B Due: <span class="fa fa-inr"></span> {{data?.PastDue | number}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" style="text-align: right;font-weight: bold;">Grand Total: <span class="fa fa-inr"></span> {{data?.GrandTotal | number}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" style="text-align: right;">Shipping: <span class="fa fa-inr"></span> {{data?.Payment | number}}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid black;">
+                        <td colspan="5" style="text-align: right;">GST: <span class="fa fa-inr"></span> {{data?.OtherPayment | number}}</td>
+                    </tr>
+                    <tr>
+                 
+                        <td colspan="5" style="text-align: right;font-weight: bold;">Total Due: <span class="fa fa-inr"></span> {{data?.TotalDue | number}}</td>
+                    </tr>
+                </table>
+                <!-- <div style="margin-bottom:25px;">
+                    <p colspan="3" *ngIf="data?.Status"><b>Remarks:</b> {{data.Remarks}}</p>
+                    <p colspan="3" *ngIf="!data?.Status"><b>Note:</b> {{data.Note}}</p>
+                </div> -->
+
+
+                <!-- <table class="table" style="border-bottom: 1px solid black;border-collapse: collapse;margin-top:0;padding-top:0;margin-bottom:0;padding-bottom:0;">
+                    <tr style="border-bottom:1px solid black;">
+                        <th width="5%" style="text-align:left;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">S.No.</th>
+                        <th width="10%" style="text-align:left;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Qty</th>
+                        <th width="20%" style="text-align:left;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Item</th>
+                        <th width="20%" style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Price</th>
+                        <th width="20%" style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">Amount</th>
+                    </tr>
+                    <tr *ngFor="let item of items, let i = index">
+                        <td style="padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">{{i + 1}}</td>
+                        <td style="padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">{{item.Qty}}</td>
+                        <td style="padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;">{{getItem(item.ItemId)}}</td>
+                        <td style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;"> <i class="fa fa-rupee" style="margin-right:3px;"></i>{{item.Price | number}}</td>
+                        <td style="text-align:right;padding-bottom:0; margin-bottom:0; margin-top:0;padding-top:0;"> <i class="fa fa-rupee" style="margin-right:3px;"></i>{{item.Amount | number}}</td>
+                    </tr>
+                </table>
+                <div style="margin-bottom: 10px !important;">
+                <p style="margin-top:0;padding-top:0;margin-bottom:0;padding-bottom:0;margin-right:7px;font-weight:bold;"><span style="margin-right:100px;">Total Qty: {{data.Qty}}</span><span class="pull-right">Total: <i class="fa fa-rupee" style="margin-right:3px;"></i>{{data.Total | number}}</span></p>
+                <p style="margin-top:0;padding-top:0;margin-bottom:0;padding-bottom:0;margin-right:7px;border-bottom:1px solid black;"><span style="margin-left:150px;"></span><span class="pull-right">Shipping: <i class="fa fa-rupee" style="margin-right:3px;"></i>{{data.OtherPayment | number}}</span></p>
+                <p style="text-align: right; margin-top:0;padding-top:0;margin-bottom:0;padding-bottom:0;margin-right:7px;"><b>Grand Total: <i class="fa fa-rupee" style="margin-right:3px;"></i>{{(data.GrandTotal + data.OtherPayment) | number}}</b></p> -->
+                <!-- </div> -->
+
+            </div>
+        </div>
+    </div>
+</div>
