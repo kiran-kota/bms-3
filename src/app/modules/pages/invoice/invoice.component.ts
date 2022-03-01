@@ -46,7 +46,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     const accounts = JSON.parse(localStorage.getItem('accounts'));
     this.account = accounts.find(x=>x.AccountId == cid);
     this.firestore.collection('accounts').doc(this.account.AccountId.toString()).set({'UserName': this.user.UserName, 'UserId': this.user.UserId, 'Name': this.account.Name, 'uid': this.account.AccountId.toString()});
-    this.items = this.account.Role == 'Supplier' ? JSON.parse(localStorage.getItem('items')).filter(x=>x.Status == true && x.ItemAccountsList.indexOf(this.account.AccountId) > -1) : JSON.parse(localStorage.getItem('items')).filter(x=>x.Status == true);
+    this.items = this.account.Role == 'Supplier' ? JSON.parse(localStorage.getItem('items')).filter(x=>x.Status == true && x.Accounts.indexOf(this.account.AccountId) > -1) : JSON.parse(localStorage.getItem('items')).filter(x=>x.Status == true);
     this.codes = [];
     this.items.map(x=>{
       this.codes = this.codes.concat(x.Code);
@@ -68,7 +68,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     this.apiService.get('items').subscribe((res:any)=>{
       console.log(res);
       localStorage.setItem('items', JSON.stringify(res));
-      this.items = this.account.Role == 'Supplier' ? res.filter(x=>x.Status == true && x.ItemAccountsList.indexOf(this.account.AccountId) > -1) : res.filter(x=>x.Status == true);
+      this.items = this.account.Role == 'Supplier' ? res.filter(x=>x.Status == true && x.Accounts.indexOf(this.account.AccountId) > -1) : res.filter(x=>x.Status == true);
       this.codes = [];
       this.items.map(x=>{
         this.codes = this.codes.concat(x.Code);

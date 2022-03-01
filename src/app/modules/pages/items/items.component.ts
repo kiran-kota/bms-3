@@ -5,8 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 import { DataTablesModule, DataTableDirective } from "angular-datatables";
 import { Subject } from "rxjs";
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MustUnique } from './../../../helpers/must-unique.validator';
 import { ExcelService } from 'src/app/services/excel.service';
 import { Item } from 'src/app/models/Item';
 import { ItemAccount } from 'src/app/models/ItemAccount';
@@ -462,12 +460,17 @@ export class ItemsComponent implements OnDestroy, AfterViewInit, OnInit {
     }
     return error;
   }
-  showMore(u:any, t:string){
-    this.report = t == 'sold' ? _.orderBy(u.BillItemSold, ['InvoiceNo'], ['desc']) : _.orderBy(u.BillItemPurchased, ['InvoiceNo'], ['desc']);
-    this.title = `${t=="sold" ? "Sale" : "Purchase"} Report of ${u.Code} : [ ${u.Stock}(I) + ${u.Purchased}(P) - ${u.Sold}(S) = ${u.Stock + u.Purchased - u.Sold}(A) ]`;
-    if(this.report.length > 0){
+  showMore(d:any, t:string){
+    this.loading = true;
+
+    this.apiService.get(`itemdetailsbydate/${d.ItemId}/${this.start.format('YYYY-MM-DD')}/${this.end.format('YYYY-MM-DD')}`).subscribe((res:any)=>{
+      this.loading = false;
+      let u = res[0];
+      console.log(u, '')
+      this.report = t == 'Sale' ? _.orderBy(u.BillItemSold, ['InvoiceNo'], ['desc']) : _.orderBy(u.BillItemPurchased, ['InvoiceNo'], ['desc']);
+      this.title = `${t=="Sale" ? "Sale" : "Purchase"} Report of ${u.Code} `;
       $('#reportModal').modal('toggle');
-    }
+    });
   }
 
 }

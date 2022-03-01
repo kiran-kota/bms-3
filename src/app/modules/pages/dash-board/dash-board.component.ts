@@ -17,6 +17,8 @@ export class DashBoardComponent implements OnInit {
 
   start = moment().subtract(29, "days");
   end = moment();
+  user:any = JSON.parse(localStorage.getItem('user'));
+  tabs:any = JSON.parse(JSON.parse(localStorage.getItem('user')).Tabs);
 
   data:any;
   summary: any;
@@ -209,6 +211,8 @@ export class DashBoardComponent implements OnInit {
 
   ngOnInit() {
     localStorage.setItem('url-link', 'Dashboard');
+    const p = this.user.Role == 'Owner' || this.user.Role == 'Admin' || this.tabs.indexOf('Dashboard') > -1;
+    console.log(p, 'permission');
     this.daterange.start = moment().subtract(29, "days");
     this.daterange.end = moment();
 

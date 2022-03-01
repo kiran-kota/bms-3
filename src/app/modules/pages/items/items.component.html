@@ -34,6 +34,8 @@
                 <tr>
                     <th>Code</th>
                     <th>Name</th>
+                    <th style="text-align:center;min-width:70px;">Int. Qty</th>
+
                     <th style="text-align:center;min-width:70px;">Purchased</th>
                     <th style="text-align:center;min-width:70px;">Sold</th>
                     <th style="text-align:center;min-width:70px;">Available</th>
@@ -47,8 +49,9 @@
                 <tr *ngFor="let u of filtered">
                     <td>{{u.Code}}</td>
                     <td>{{u.Name}}</td>
-                    <td class="text-right"><span *ngIf="u.BillItemPurchased.length == 0">{{u.Purchased + u.Stock | number }}</span><a *ngIf="u.BillItemPurchased.length > 0" style="cursor: pointer;" (click)="showMore(u, 'purchased')"> {{u.Purchased + u.Stock | number }}</a></td>
-                    <td class="text-right"><span *ngIf="u.BillItemSold.length == 0">{{u.Sold | number }}</span><a *ngIf="u.BillItemSold.length > 0" style="cursor: pointer;" (click)="showMore(u, 'sold')"> {{u.Sold | number }}</a></td>
+                    <td class="text-right">{{u.Stock | number}}</td>
+                    <td class="text-right" style="cursor: pointer;" (click)="showMore(u, 'Purchase')">{{u.DatePurchased | number}}</td>
+                    <td class="text-right" style="cursor: pointer;" (click)="showMore(u, 'Sale')">{{u.DateSold | number}}</td>
                     <td class="text-right"> {{(u.Purchased + u.Stock - u.Sold) | number }}</td>
                     <td class="text-right"><span class="fa fa-inr"></span> {{u.Price | number }}</td>
                     <td class="text-right"><span class="fa fa-inr"></span> {{((u.Purchased + u.Stock - u.Sold) * u.Price) | number }}</td>
